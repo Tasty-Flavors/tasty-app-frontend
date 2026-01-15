@@ -1,0 +1,71 @@
+:root {
+    --font-primary: 'Raleway', 'Roboto', sans-serif;
+    --font-size-primary: 15px;
+    --yellow-primary: #FDAF34;
+}
+
+main {
+    font-size: var(--font-size-primary);
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+a,
+p,
+button {
+    font-family: var(--font-primary);
+    font-weight: 700;
+}
+
+.login-section {
+    min-height: 100vh;
+}
+
+.login-form h1 {
+    font-size: 2.5rem;
+}
+
+.login-form p {
+    font-weight: 400;
+    margin: 1rem 0;
+}
+
+.login-form .form {
+    padding: 1.5rem 0;
+}
+
+.login-form .form .form-button {
+    padding: 0 12px;
+}
+
+.login-form .login-social {
+    margin-top: 2.5rem;
+}
+
+.login-social button {
+    font-size: 14px;
+}
+
+.login-social svg {
+    width: 20px;
+    height: 20px;
+    vertical-align: sub;
+}
+
+
+.login-image {
+    background-color: var(--yellow-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    padding: 0;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+}
+
