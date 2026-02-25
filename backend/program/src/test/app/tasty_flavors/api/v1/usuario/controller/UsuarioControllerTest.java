@@ -1,10 +1,11 @@
 package app.tasty_flavors.api.v1.usuario.controller;
 
 import app.tasty_flavors.api.v1.usuario.UsuarioFacade;
-import app.tasty_flavors.api.v1.usuario.controller.stub.CadastroRequestStub;
-import app.tasty_flavors.api.v1.usuario.controller.stub.CadastroResponseStub;
-import app.tasty_flavors.api.v1.usuario.controller.stub.LoginRequestStub;
-import app.tasty_flavors.api.v1.usuario.controller.stub.LoginResponseStub;
+import app.tasty_flavors.api.v1.usuario.stub.CadastroRequestStub;
+import app.tasty_flavors.api.v1.usuario.stub.CadastroResponseStub;
+import app.tasty_flavors.api.v1.usuario.stub.LoginRequestStub;
+import app.tasty_flavors.api.v1.usuario.stub.LoginResponseStub;
+
 import app.tasty_flavors.api.v1.usuario.model.request.CadastroRequest;
 import app.tasty_flavors.api.v1.usuario.model.request.LoginRequest;
 import app.tasty_flavors.api.v1.usuario.model.response.CadastroResponse;
