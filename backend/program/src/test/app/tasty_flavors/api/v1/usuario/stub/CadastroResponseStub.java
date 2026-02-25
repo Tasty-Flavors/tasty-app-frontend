@@ -1,4 +1,4 @@
-package app.tasty_flavors.api.v1.usuario.controller.stub;
+package app.tasty_flavors.api.v1.usuario.stub;
 
 import app.tasty_flavors.api.v1.usuario.model.response.CadastroResponse;
 
