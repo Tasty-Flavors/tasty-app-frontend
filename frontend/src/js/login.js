@@ -1,0 +1,27 @@
+// js/login.js
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault(); // impede reload
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/usuario/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha: password })
+      });
+
+      if (!response.ok) throw new Error("Login falhou");
+      const data = await response.json();
+      console.log(data);
+      alert(`Bem-vindo, ${data.usuario}`);
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+});
