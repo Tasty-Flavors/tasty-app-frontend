@@ -13,5 +13,5 @@ spring:
     properties:
       hibernate.format_sql: true
 jwt:
-  secret: sua-carne-passou-do-ponto
+  secret: ba76e755f23bb406c6e33cb18916be32
   expiration: 3600000
