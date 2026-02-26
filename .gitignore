@@ -151,3 +151,7 @@ build/
 .idea/
 *.iml
 out/
+
+# Resources
+
+src/main/resources/application.yaml
