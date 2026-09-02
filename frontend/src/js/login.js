@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("password").value;
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/usuario/login", {
+      const response = await fetch("http://localhost:8085/tasty-auth-service/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha: password })
@@ -19,8 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) throw new Error("Login falhou");
       const data = await response.json();
       console.log(data);
-      alert(`Bem-vindo, ${data.usuario}`);
+      localStorage.setItem("accessToken", data.accessToken);
+      window.location.href = "index.html";
     } catch (err) {
+      console.error(err);
       alert(err.message);
     }
   });
