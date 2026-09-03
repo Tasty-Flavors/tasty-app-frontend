@@ -25,16 +25,18 @@ function atualizarDashboard() {
 }
 async function carregarFotoPerfilRestaurante() {
   try {
-    const response = await fetch("http://localhost:8080/restaurante", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    const response = await fetch("http://localhost:8081/tasty-app-bff/v1/restaurante/dashboard",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (response.status === 401) {
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
 
       window.location.href = "login.html";
 
@@ -47,16 +49,16 @@ async function carregarFotoPerfilRestaurante() {
     const restaurante = await response.json();
 
     document.getElementById("restaurant_img").src = restaurante.foto;
-    document.getElementById("restaurant_name").textContent = restaurante.nome;
+    document.getElementById("restaurant_name").textContent = restaurante.nomeEstabelecimento;
     document.getElementById("restaurant_adress").textContent = restaurante.endereco;
-    document.getElementById("restaurant_description").textContent = restaurante.descricao;
+    document.getElementById("restaurant_description").textContent = restaurante.email;
   } catch (erro) {
     console.error("Erro:", erro);
   }
 }
 
 function logout() {
-  localStorage.removeItem("token");
+  localStorage.removeItem("accessToken");
 
   window.location.href = "login.html";
 }
