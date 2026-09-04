@@ -1,5 +1,4 @@
 const token = localStorage.getItem("accessToken");
-
 if (!token) {
   window.location.href = "login.html";
 }
@@ -47,11 +46,10 @@ async function carregarFotoPerfilRestaurante() {
     }
 
     const restaurante = await response.json();
-
-    document.getElementById("restaurant_img").src = restaurante.foto;
-    document.getElementById("restaurant_name").textContent = restaurante.nomeEstabelecimento;
+    document.getElementById("restaurant_img").src = restaurante.imagem;
+    document.querySelectorAll("[data-restaurant-name]").forEach(elemento => {elemento.textContent = restaurante.nomeEstabelecimento});
     document.getElementById("restaurant_adress").textContent = restaurante.endereco;
-    document.getElementById("restaurant_description").textContent = restaurante.email;
+    document.getElementById("restaurant_description").textContent = restaurante.descricao;
   } catch (erro) {
     console.error("Erro:", erro);
   }
