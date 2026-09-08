@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,133 +12,173 @@
 
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <div class="logo">
-        <img src="assets/png/tasty-logo.png" alt="Logo Tasty Flavors Delivery" class="img-fluid">
-        <h2 data-restaurant-name>nome</h2>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="assets/png/tasty-logo.png" alt="Logo Tasty Flavors Delivery" class="img-fluid">
+            <h2 data-restaurant-name>nome</h2>
+        </div>
+
+        <ul class="menu">
+            <li><img src="assets/icons/pagina-inicial.png"> Início</li>
+        </ul>
+        <div>Desempenho e vendas</div>
+        <ul class="menu">
+            <li><img src="assets/icons/desempenho.png"> Desempenho</li>
+            <li><img src="assets/icons/pedido.png"> Pedidos</li>
+            <li><img src="assets/icons/sifrao.png"> Financeiro</li>
+            <li><img src="assets/icons/estrela.png"> Avaliações</li>
+            <li><img src="assets/icons/premium.png"> Premium</li>
+        </ul>
+        <div>Marketing</div>
+        <ul class="menu">
+            <li><img src="assets/icons/pessoas.png"> Seus Clientes</li>
+            <li><img src="assets/icons/promocoes.png"> Promoções</li>
+            <li><img src="assets/icons/megafone.png"> Anúncios</li>
+            <li><img src="assets/icons/feed.png"> Feed</li>
+            <li><img src="assets/icons/parceria.png"> Parcerias</li>
+        </ul>
+        <div>Configurações da Loja</div>
+        <ul class="menu">
+            <li><img src="assets/icons/cardapio.png"> Cardápios</li>
+            <li><img src="assets/icons/acessibilidade.png"> Acessibilidade</li>
+            <li><img src="assets/icons/privacidade.png"> Privacidade e Segurança</li>
+            <li><img src="assets/icons/pessoa.png"> Dados da Loja</li>
+            <li><img src="assets/icons/sair.png"> Logout</li>
+        </ul>
     </div>
 
-    <ul class="menu">
-        <li><img src="assets/icons/pagina-inicial.png"> Início</li>
-    </ul>
-    <div>Desempenho e vendas</div>
-    <ul class="menu">
-        <li><img src="assets/icons/desempenho.png"> Desempenho</li>
-        <li><img src="assets/icons/pedido.png"> Pedidos</li>
-        <li><img src="assets/icons/sifrao.png"> Financeiro</li>
-        <li><img src="assets/icons/estrela.png"> Avaliações</li>
-        <li><img src="assets/icons/premium.png"> Premium</li>
-    </ul>
-    <div>Marketing</div>
-    <ul class="menu">
-        <li><img src="assets/icons/pessoas.png"> Seus Clientes</li>
-        <li><img src="assets/icons/promocoes.png"> Promoções</li>
-        <li><img src="assets/icons/megafone.png"> Anúncios</li>
-        <li><img src="assets/icons/feed.png"> Feed</li>
-        <li><img src="assets/icons/parceria.png"> Parcerias</li>
-    </ul>
-    <div>Configurações da Loja</div>
-    <ul class="menu">
-        <li><img src="assets/icons/cardapio.png"> Cardápios</li>
-        <li><img src="assets/icons/acessibilidade.png"> Acessibilidade</li>
-        <li><img src="assets/icons/privacidade.png"> Privacidade e Segurança</li>
-        <li><img src="assets/icons/pessoa.png"> Dados da Loja</li>
-        <li><img src="assets/icons/sair.png"> Logout</li>
-    </ul>
-</div>
+    <!-- MAIN -->
+    <div class="main">
 
-<!-- MAIN -->
-<div class="main">
+        <div class="header">
+            <h1>Início</h1>
+            <p>Bem vindo novamente, <span data-restaurant-name>nome</span>!</p>
+        </div>
 
-    <div class="header">
-        <h1>Início</h1>
-        <p>Bem vindo novamente, <span data-restaurant-name>nome</span>!</p>
-    </div>
+        <!-- RESTAURANTE -->
+        <div class="card restaurant">
+            <div class="restaurant-left">
 
-    <!-- RESTAURANTE -->
-    <div class="card restaurant">
-        <div class="restaurant-left">
-            <img src="https://picsum.photos/200" id="restaurant_img" alt="">
-            <div>
-                <h2 data-restaurant-name>nome</h2>
-                <p id="restaurant_adress">Avenida Fulano de Tal, Porto Alegre, RS</p>
-                <p id="restaurant_description">Alguma informação muito legal sobre o restaurante</p>
+                <img src="https://assets.monica.im/low-code/img/20241205053930263.webp" id="restaurant_img" alt="">
+
+                <div id="restaurantInfo">
+
+                    <h2 data-restaurant-name>nome</h2>
+
+                    <p id="restaurant_adress">Sem endereço</p>
+
+                    <p id="restaurant_description">Sem descrição</p>
+
+                    <br>
+
+                    <button class="btn" id="btnEditarRestaurante">
+                        Editar descrição e logo
+                    </button>
+
+                </div>
+
+                <!-- FORMULÁRIO -->
+                <div id="formEditarRestaurante" style="display: none;">
+
+                    <h2 data-restaurant-name>nome</h2>
+
+                    <label for="novoEndereco">Endereço:</label>
+                    <input type="text" id="novoEndereco" placeholder="Digite o endereço">
+
+                    <label for="novaDescricao">Descrição:</label>
+                    <textarea id="novaDescricao" rows="4" placeholder="Digite a descrição"></textarea>
+
+                    <label for="novaLogo">Logo:</label>
+                    <input type="file" id="novaLogo" accept="image/*">
+
+                    <div class="botoes-edicao">
+
+                        <button class="btn" id="btnCancelarEdicao">
+                            Cancelar
+                        </button>
+
+                        <button class="btn" id="btnSalvarRestaurante">
+                            Salvar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="rating">
+                <p>Média geral</p>
+                <h1 id="ratingValue">5.0</h1>
+                <p>★★★★★</p>
+                <small>135 avaliações</small>
+            </div>
+        </div>
+
+        <!-- CARDS -->
+        <div class="grid">
+            <div class="card">
+                <h3>Configurações de retirada</h3>
                 <br>
-                <button class="btn">Editar descrição e logo</button>
+                <p>Tempo de retirada: <b>0 minuto</b></p>
+                <br>
+                <p>Tempo de entrega: <b id="deliveryTime">60 minutos</b></p>
+                <button class="btn" onclick="alterarTempo()">Alterar</button>
+            </div>
+
+            <div class="card">
+                <h3>Informes</h3>
+                <br>
+                <p>Dicas de Promoções</p>
+                <button class="btn">Ler mais</button>
+                <br><br>
+                <p>Atendimento Financeiro</p>
+                <button class="btn">Ler mais</button>
+            </div>
+
+            <div class="card">
+                <h3>Últimas faturas</h3>
             </div>
         </div>
 
-        <div class="rating">
-            <p>Média geral</p>
-            <h1 id="ratingValue">5.0</h1>
-            <p>★★★★★</p>
-            <small>135 avaliações</small>
+        <!-- RESULTADOS -->
+        <div class="result-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Pedidos</h3>
+                    <button class="btn">Filtrar por</button>
+                </div>
+
+                <br>
+
+                <div class="orders">
+                    Aceitos <span class="green" id="aceitos">0</span>
+                    Recusados <span class="red" id="recusados">0</span>
+                    Concluídos <span class="green" id="concluidos">0</span>
+                </div>
+
+                <br>
+                <small>Esta semana</small>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Faturamento</h3>
+                    <button class="btn">Filtrar por</button>
+                </div>
+
+                <br>
+                <div class="money" id="faturamento">R$ 0,00</div>
+
+                <br>
+                <small>Esta semana</small>
+            </div>
         </div>
+
     </div>
 
-    <!-- CARDS -->
-    <div class="grid">
-        <div class="card">
-            <h3>Configurações de retirada</h3>
-            <br>
-            <p>Tempo de retirada: <b>0 minuto</b></p>
-            <br>
-            <p>Tempo de entrega: <b id="deliveryTime">60 minutos</b></p>
-            <button class="btn" onclick="alterarTempo()">Alterar</button>
-        </div>
-
-        <div class="card">
-            <h3>Informes</h3>
-            <br>
-            <p>Dicas de Promoções</p>
-            <button class="btn">Ler mais</button>
-            <br><br>
-            <p>Atendimento Financeiro</p>
-            <button class="btn">Ler mais</button>
-        </div>
-
-        <div class="card">
-            <h3>Últimas faturas</h3>
-        </div>
-    </div>
-
-    <!-- RESULTADOS -->
-    <div class="result-grid">
-        <div class="card">
-            <div class="card-header">
-                <h3>Pedidos</h3>
-                <button class="btn">Filtrar por</button>
-            </div>
-
-            <br>
-
-            <div class="orders">
-                Aceitos <span class="green" id="aceitos">0</span>
-                Recusados <span class="red" id="recusados">0</span>
-                Concluídos <span class="green" id="concluidos">0</span>
-            </div>
-
-            <br>
-            <small>Esta semana</small>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h3>Faturamento</h3>
-                <button class="btn">Filtrar por</button>
-            </div>
-
-            <br>
-            <div class="money" id="faturamento">R$ 0,00</div>
-
-            <br>
-            <small>Esta semana</small>
-        </div>
-    </div>
-
-</div>
-
-<script src="js/dashboard.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
+
 </html>
