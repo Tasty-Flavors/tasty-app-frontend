@@ -108,8 +108,7 @@ btnSalvar.addEventListener("click", async () => {
       formData.append("logo", novaLogo.files[0]);
     }
 
-    const response = await fetch(
-      "http://localhost:8081/tasty-app-bff/v1/restaurante",
+    const response = await fetch(`${API_URL}/v1/restaurante`,
       {
         method: "PUT",
         headers: {
