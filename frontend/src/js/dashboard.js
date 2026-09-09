@@ -60,7 +60,7 @@ function atualizarDashboard() {
 }
 async function carregarFotoPerfilRestaurante() {
   try {
-    const response = await fetch("http://localhost:8081/tasty-app-bff/v1/restaurante/dashboard",
+    const response = await fetch(`${API_URL}/v1/restaurante/dashboard`,
       {
         method: "GET",
         headers: {

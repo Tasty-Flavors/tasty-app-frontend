@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("password").value;
 
     try {
-      const response = await fetch("http://localhost:8085/tasty-auth-service/login", {
+      const response = await fetch(`${AUTH_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha: password })
