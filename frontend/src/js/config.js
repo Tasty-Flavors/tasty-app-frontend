@@ -4,8 +4,8 @@ const isLocal = window.location.hostname === "localhost"
 
 const API_URL = isLocal
   ? "http://localhost:8081/tasty-app-bff"
-  : "https://teu-bff-hml.fly.dev/tasty-app-bff";
+  : "https://tasty-app-bff.fly.dev/tasty-app-bff";
 
 const AUTH_URL = isLocal
   ? "http://localhost:8085/tasty-auth-service"
-  : "https://teu-auth-hml.fly.dev/tasty-auth-service";
+  : "https://tasty-auth-service.fly.dev/tasty-auth-service";
