@@ -1,6 +1,5 @@
 const isLocal = window.location.hostname === "localhost"
   || window.location.hostname === "127.0.0.1"
-  || window.location.hostname === "0.0.0.0";
 
 const API_URL = isLocal
   ? "http://localhost:8081/tasty-app-bff"
