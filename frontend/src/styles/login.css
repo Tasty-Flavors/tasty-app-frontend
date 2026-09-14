@@ -1,13 +1,16 @@
 :root {
     --font-primary: 'Raleway', 'Roboto', sans-serif;
     --font-size-primary: 15px;
-    --yellow-primary: #FDAF34;
+    --yellow-primary: #FFA60C;
+}
+
+html {
+    background-color: #FFA60C;
 }
 
 main {
     font-size: var(--font-size-primary);
 }
-
 
 h1,
 h2,
@@ -38,34 +41,133 @@ button {
     padding: 1.5rem 0;
 }
 
-.login-form .form .form-button {
-    padding: 0 12px;
+.align {
+    padding: 8px;
 }
 
+.login-form .form .form-button {
+    padding: 0 12px;
+    :hover {
+        background:#af6900;
+        color: #FFFFFF;
+    }
+}
+
+.entrar {
+    width: 100%;
+    height: 38px;
+    background-color: #A36200;
+    color: #FFFFFF;
+    border: none;
+
+    
+
+}
+
+
+/* Login social */
 .login-form .login-social {
     margin-top: 2.5rem;
 }
 
-.login-social button {
-    font-size: 14px;
+.social-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
 }
 
+.social-button {
+    /* tamanho igual */
+    width: 165px;
+    height: 38px;
+
+    /* alinhamento interno */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* evita diferenças do Bootstrap */
+    padding: 0 10px;
+    margin: 0;
+    gap: 5;
+
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* Ícones */
 .login-social svg {
     width: 20px;
     height: 20px;
-    vertical-align: sub;
+    flex: 0 0 20px;
 }
 
+/* Texto abaixo dos botões */
+.login-social .text-center p {
+    margin-top: 15px;
+}
 
+/* Imagem / logo */
 .login-image {
-    background-color: var(--yellow-primary);
-    min-height: 100vh;
+    background-color: #FFA60C;
     display: flex;
     flex-direction: column;
-    align-content: center;
-    justify-content: center;
     padding: 0;
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
 }
 
+.mobile-form {
+    padding: 0;
+}
+
+
+
+/* ========================= */
+/*        MOBILE             */
+/* ========================= */
+
+@media screen and (max-width: 768px) {
+
+    main {
+        font-size: 14px;
+        background-color: #FFA60C;
+    }
+
+    .login-form h1 {
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .login-form p {
+        display: none;
+    }
+
+    .login-image {
+        background-color: transparent;
+        position: relative;
+        width: 50%;
+    }
+
+    .social-buttons {
+        gap: 8px;
+    }
+
+    .social-button {
+        width: 100%;
+        height: 32px;
+        padding: 8px;
+        gap: 5px;
+        font-size: 10px;
+        background-color: white;
+
+    }
+
+    .login-social svg {
+        width: 14px;
+        height: 14px;
+        flex: 0 0 14px;
+    }
+}
