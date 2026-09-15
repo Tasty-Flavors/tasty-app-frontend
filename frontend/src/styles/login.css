@@ -167,6 +167,11 @@ button {
     height: 18px;
 }
 
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container { visibility: hidden; pointer-events: none;}
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear { display: none; }
+
 @media screen and (min-width: 769px) {
 
     body {
