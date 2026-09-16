@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dados da Loja</title>
+
+    <link rel="stylesheet" href="styles/dados-da-loja.css">
+    <link rel="stylesheet" href="components/sidebar/sidebar.css">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <div class="layout">
+        <div id="sidebar"></div>
+        <!-- CONTEÚDO -->
+        <main class="main-content">
+            <!-- CABEÇALHO -->
+            <header class="page-header">
+                <div class="header-title">
+                    <div class="title-line">
+                        <button class="back-button" onclick="history.back()">
+                            <i data-lucide="arrow-left"></i>
+                        </button>
+                        <h1>Configurações da Loja</h1>
+                    </div>
+                    <p>Gerencie as informações do seu estabelecimento</p>
+                </div>
+            </header>
+
+            <!-- PRIMEIRA LINHA -->
+            <section class="top-grid">
+                <!-- INFORMAÇÕES BÁSICAS -->
+                <div class="card basic-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i data-lucide="store"></i>
+                        </div>
+                        <div>
+                            <h2>Informações básicas</h2>
+                            <p>
+                                Mantenha seus dados sempre atualizados para que seus clientes
+                                possam te encontrar e conhecer seu restaurante.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nome">
+                            Nome do estabelecimento <span>*</span>
+                        </label>
+                        <input type="text" id="nome" value="" placeholder="Digite o nome do estabelecimento">
+                    </div>
+                    <div class="form-group description-group">
+                        <label for="descricao">
+                            Descrição <span>*</span>
+                        </label>
+                        <textarea id="descricao" maxlength="500" placeholder="Digite a descrição"></textarea>
+                        <div class="character-count">
+                            <span id="characterCount"></span>/500
+                        </div>
+                    </div>
+                </div>
+                <!-- LOGO -->
+                <div class="card logo-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i data-lucide="image"></i>
+                        </div>
+                        <div>
+                            <h2>Logo do restaurante</h2>
+                            <p>
+                                Esta imagem será exibida no seu perfil, cardápio e em outros locais
+                                da plataforma.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="logo-content">
+                        <div class="logo-preview">
+                            <img id="restaurantLogo" src="https://assets.monica.im/low-code/img/20241205053930263.webp"
+                                alt="Logo do restaurante">
+                        </div>
+                        <div class="logo-actions">
+                            <label for="logoInput" class="change-image-button">
+                                <i data-lucide="upload"></i>
+                                Alterar imagem
+                            </label>
+                            <input type="file" id="logoInput" accept=".jpg,.jpeg,.png" hidden>
+                            <p>
+                                Formatos aceitos: JPG, PNG e JPEG
+                            </p>
+                            <p>
+                                Tamanho máximo: 2MB
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ENDEREÇO -->
+            <section class="card address-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i data-lucide="map-pin"></i>
+                    </div>
+                    <div>
+                        <h2>Endereço do estabelecimento</h2>
+                        <p>
+                            Informe o endereço completo do seu restaurante. Ele será exibido no seu perfil.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CEP -->
+                <div class="form-row cep-row">
+
+                    <div class="form-group cep-field">
+                        <label for="cep">
+                            CEP <span>*</span>
+                        </label>
+                        <input type="text" id="cep" value="" maxlength="9" placeholder="Digite seu cep">
+
+                    </div>
+
+
+                    <button type="button" class="cep-button" id="buscarCep">
+                        <i data-lucide="search"></i>
+                        Buscar CEP
+                    </button>
+
+                </div>
+
+
+                <!-- RUA -->
+                <div class="form-row">
+                    <div class="form-group street-field">
+                        <label for="rua">
+                            Rua <span>*</span>
+                        </label>
+                        <input type="text" id="rua" placeholder="Digite sua rua">
+                    </div>
+                </div>
+                <!-- NÚMERO / COMPLEMENTO / BAIRRO -->
+                <div class="form-row three-columns">
+                    <div class="form-group">
+                        <label for="numero">
+                            Número <span>*</span>
+                        </label>
+                        <input type="text" id="numero" value="" placeholder="Número">
+                    </div>
+                    <div class="form-group">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" id="complemento" value="" placeholder="Complemento">
+                    </div>
+                    <div class="form-group">
+                        <label for="bairro">
+                            Bairro <span>*</span>
+                        </label>
+                        <input type="text" id="bairro" value="" placeholder="Bairro">
+                    </div>
+                </div>
+                <!-- CIDADE / ESTADO -->
+                <div class="form-row city-state">
+                    <div class="form-group city-field">
+                        <label for="cidade">
+                            Cidade <span>*</span>
+                        </label>
+                        <input type="text" id="cidade" value="" placeholder="Cidade">
+                    </div>
+                    <div class="form-group state-field">
+                        <label for="estado">
+                            Estado <span>*</span>
+                        </label>
+                        <select id="estado">
+                            <option value="SELECIONE" selected>selecione</option>
+                            <option value="AC">AC</option>
+                            <option value="AL">AL</option>
+                            <option value="AP">AP</option>
+                            <option value="AM">AM</option>
+                            <option value="BA">BA</option>
+                            <option value="CE">CE</option>
+                            <option value="DF">DF</option>
+                            <option value="ES">ES</option>
+                            <option value="GO">GO</option>
+                            <option value="MA">MA</option>
+                            <option value="MT">MT</option>
+                            <option value="MS">MS</option>
+                            <option value="MG">MG</option>
+                            <option value="PA">PA</option>
+                            <option value="PB">PB</option>
+                            <option value="PR">PR</option>
+                            <option value="PE">PE</option>
+                            <option value="PI">PI</option>
+                            <option value="RJ">RJ</option>
+                            <option value="RN">RN</option>
+                            <option value="RS">RS</option>
+                            <option value="RO">RO</option>
+                            <option value="RR">RR</option>
+                            <option value="SC">SC</option>
+                            <option value="SP">SP</option>
+                            <option value="SE">SE</option>
+                            <option value="TO">TO</option>
+
+                        </select>
+                    </div>
+                </div>
+            </section>
+            <!-- BOTÃO SALVAR -->
+            <div class="save-container">
+                <button type="button" class="save-button" id="salvarAlteracoes">
+                    <i data-lucide="save"></i>
+                    Salvar alterações
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/dados-da-loja.js"></script>
+    <script src="components/sidebar/sidebar.js"></script>
+
+</body>
+
+</html>
