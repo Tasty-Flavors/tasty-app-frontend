@@ -168,7 +168,7 @@ salvarAlteracoes.addEventListener("click", async () => {
     
     try {
 
-    const response = await fetch(`${API_URL}/v1/restaurante`, {
+    const response = await fetch(`${API_URL}/v1/dados-estabelecimento/atualizar`, {
         method: "PUT",
         headers: {
             "Authorization": `Bearer ${token}`,
