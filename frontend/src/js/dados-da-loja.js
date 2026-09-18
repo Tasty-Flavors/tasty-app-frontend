@@ -149,9 +149,7 @@ buscarCep.addEventListener("click", async () => {
 ========================= */
 
 salvarAlteracoes.addEventListener("click", async () => {
-    const dados = {
-        nome: document.getElementById("nome").value,
-        descricao: document.getElementById("descricao").value,
+    const endereco = {
         cep: document.getElementById("cep").value,
         rua: document.getElementById("rua").value,
         numero: document.getElementById("numero").value,
@@ -159,6 +157,12 @@ salvarAlteracoes.addEventListener("click", async () => {
         bairro: document.getElementById("bairro").value,
         cidade: document.getElementById("cidade").value,
         estado: document.getElementById("estado").value
+    };
+
+    const dados = {
+        nome: document.getElementById("nome").value,
+        descricao: document.getElementById("descricao").value,
+        endereco
     };
 
     console.log("Dados da loja:", dados);
