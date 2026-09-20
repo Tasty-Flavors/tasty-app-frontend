@@ -7,46 +7,15 @@
     <title>Dashboard Restaurante</title>
 
     <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="components/sidebar/sidebar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <div class="logo">
-            <img src="assets/png/tasty-logo.png" alt="Logo Tasty Flavors Delivery" class="img-fluid">
-            <h2 data-restaurant-name>nome</h2>
-        </div>
-
-        <ul class="menu">
-            <li><img src="assets/icons/pagina-inicial.png"> Início</li>
-        </ul>
-        <div>Desempenho e vendas</div>
-        <ul class="menu">
-            <li><img src="assets/icons/desempenho.png"> Desempenho</li>
-            <li><img src="assets/icons/pedido.png"> Pedidos</li>
-            <li><img src="assets/icons/sifrao.png"> Financeiro</li>
-            <li><img src="assets/icons/estrela.png"> Avaliações</li>
-            <li><img src="assets/icons/premium.png"> Premium</li>
-        </ul>
-        <div>Marketing</div>
-        <ul class="menu">
-            <li><img src="assets/icons/pessoas.png"> Seus Clientes</li>
-            <li><img src="assets/icons/promocoes.png"> Promoções</li>
-            <li><img src="assets/icons/megafone.png"> Anúncios</li>
-            <li><img src="assets/icons/feed.png"> Feed</li>
-            <li><img src="assets/icons/parceria.png"> Parcerias</li>
-        </ul>
-        <div>Configurações da Loja</div>
-        <ul class="menu">
-            <li><img src="assets/icons/cardapio.png"> Cardápios</li>
-            <li><img src="assets/icons/acessibilidade.png"> Acessibilidade</li>
-            <li><img src="assets/icons/privacidade.png"> Privacidade e Segurança</li>
-            <li><img src="assets/icons/pessoa.png"> Dados da Loja</li>
-            <li><img src="assets/icons/sair.png"> Logout</li>
-        </ul>
-    </div>
+    <div id="sidebar"></div>
 
     <!-- MAIN -->
     <div class="main">
@@ -63,49 +32,12 @@
                 <img src="https://assets.monica.im/low-code/img/20241205053930263.webp" id="restaurant_img" alt="">
 
                 <div id="restaurantInfo">
-
                     <h2 data-restaurant-name>nome</h2>
-
                     <p id="restaurant_adress">Sem endereço</p>
-
                     <p id="restaurant_description">Sem descrição</p>
-
                     <br>
 
-                    <button class="btn" id="btnEditarRestaurante">
-                        Editar descrição e logo
-                    </button>
-
                 </div>
-
-                <!-- FORMULÁRIO -->
-                <div id="formEditarRestaurante" style="display: none;">
-
-                    <h2 data-restaurant-name>nome</h2>
-
-                    <label for="novoEndereco">Endereço:</label>
-                    <input type="text" id="novoEndereco" placeholder="Digite o endereço">
-
-                    <label for="novaDescricao">Descrição:</label>
-                    <textarea id="novaDescricao" rows="4" placeholder="Digite a descrição"></textarea>
-
-                    <label for="novaLogo">Logo:</label>
-                    <input type="file" id="novaLogo" accept="image/*">
-
-                    <div class="botoes-edicao">
-
-                        <button class="btn" id="btnCancelarEdicao">
-                            Cancelar
-                        </button>
-
-                        <button class="btn" id="btnSalvarRestaurante">
-                            Salvar
-                        </button>
-
-                    </div>
-
-                </div>
-
             </div>
 
             <div class="rating">
@@ -178,6 +110,7 @@
 
     </div>
     <script src="js/config.js"></script>
+    <script src="components/sidebar/sidebar.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 

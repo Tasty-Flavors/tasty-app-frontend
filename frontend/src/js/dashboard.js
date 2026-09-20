@@ -15,30 +15,6 @@ if (!token) {
   window.location.href = "login.html";
 }
 
-btnEditar.addEventListener("click", () => {
-
-  // Preenche os campos com os valores atuais
-  novoEndereco.value = restaurantAdress.textContent;
-  novaDescricao.value = restaurantDescription.textContent;
-
-  // Esconde as informações atuais
-  restaurantInfo.style.display = "none";
-
-  // Mostra o formulário
-  formEditar.style.display = "block";
-
-});
-
-
-btnCancelar.addEventListener("click", () => {
-
-  formEditar.style.display = "none";
-
-  restaurantInfo.style.display = "block";
-
-});
-
-
 function alterarTempo() {
   let novoTempo = prompt("Novo tempo de entrega (minutos):");
   if (novoTempo) {
@@ -84,7 +60,14 @@ async function carregarFotoPerfilRestaurante() {
     const restaurante = await response.json();
     document.getElementById("restaurant_img").src = restaurante.imagem || "https://assets.monica.im/low-code/img/20241205053930263.webp";
     document.querySelectorAll("[data-restaurant-name]").forEach(elemento => {elemento.textContent = restaurante.nomeEstabelecimento});
-    document.getElementById("restaurant_adress").textContent = restaurante.endereco || "Sem endereço";
+    const endereco = restaurante.endereco;
+
+    if (endereco) {
+      document.getElementById("restaurant_adress").textContent =
+        `${endereco.rua}, ${endereco.numero} - ${endereco.bairro}, ${endereco.cidade} - ${endereco.estado}, ${endereco.cep}`;
+    } else {
+      document.getElementById("restaurant_adress").textContent = "Sem endereço";
+    }
     document.getElementById("restaurant_description").textContent = restaurante.descricao || "Sem descrição";
   } catch (erro) {
     console.error("Erro:", erro);
@@ -97,52 +80,4 @@ function logout() {
   window.location.href = "login.html";
 }
 
-
-btnSalvar.addEventListener("click", async () => {
-  try {
-    const formData = new FormData();
-
-    formData.append("descricao", novaDescricao.value);
-
-    if (novaLogo.files.length > 0) {
-      formData.append("logo", novaLogo.files[0]);
-    }
-
-    const response = await fetch(`${API_URL}/v1/restaurante`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      },
-    );
-
-    if (response.status === 401) {
-      localStorage.removeItem("accessToken");
-      window.location.href = "login.html";
-      return;
-    }
-
-    if (!response.ok) {
-      throw new Error("Erro ao atualizar restaurante");
-    }
-
-    const restaurante = await response.json();
-
-    document.getElementById("restaurant_description").textContent =
-      restaurante.descricao;
-
-    document.getElementById("restaurant_img").src =
-      restaurante.imagem || "https://assets.monica.im/low-code/img/20241205053930263.webp";
-
-    formEditar.style.display = "none";
-
-  } catch (erro) {
-    console.error("Erro:", erro);
-    alert("Erro ao atualizar restaurante");
-  }
-});
-
 window.addEventListener("DOMContentLoaded", carregarFotoPerfilRestaurante);
-setInterval(atualizarDashboard, 5000);

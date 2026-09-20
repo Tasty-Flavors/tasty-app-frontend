@@ -1,0 +1,119 @@
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+    width: 223px;
+    min-width: 223px;
+    min-height: 100vh;
+
+    background: linear-gradient(
+        180deg,
+        #ff9800 0%,
+        #ff9f00 100%
+    );
+
+    padding: 24px 15px;
+}
+
+.sidebar-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+.sidebar-logo {
+    width: 90px;
+    height: 90px;
+
+    object-fit: contain;
+}
+
+.restaurant-name {
+    margin-top: 8px;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.menu-item {
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 0 9px;
+
+    color: #111;
+    text-decoration: none;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+.menu-item svg {
+    width: 18px;
+    height: 18px;
+
+    stroke-width: 2;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.menu-item.active {
+    background: rgba(205, 119, 0, 0.45);
+
+    font-weight: 700;
+}
+
+.menu-section-title {
+    margin-top: 14px;
+    margin-bottom: 6px;
+
+    padding-left: 9px;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   RESPONSIVO - SIDEBAR
+========================= */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        width: 190px;
+        min-width: 190px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .sidebar {
+        width: 100%;
+        min-width: 100%;
+        min-height: auto;
+    }
+
+    .sidebar-menu {
+        display: none;
+    }
+
+}
