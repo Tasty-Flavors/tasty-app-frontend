@@ -160,6 +160,95 @@ body{
 .btn:hover{
     background:#eee;
 }
+/* EDIÇÃO DO RESTAURANTE */
+
+.restaurant-left {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+/* Área das informações e do formulário */
+#restaurantInfo,
+#formEditarRestaurante {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Formulário */
+#formEditarRestaurante {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Título do formulário */
+#formEditarRestaurante h2 {
+    margin-bottom: 5px;
+}
+
+/* Labels */
+#formEditarRestaurante label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Inputs */
+#formEditarRestaurante input[type="text"],
+#formEditarRestaurante textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Placeholder */
+#formEditarRestaurante input::placeholder,
+#formEditarRestaurante textarea::placeholder {
+    color: #999;
+}
+
+/* Textarea */
+#formEditarRestaurante textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Input de logo */
+#formEditarRestaurante input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+}
+
+/* Botões */
+#formEditarRestaurante .btn {
+    margin-top: 10px;
+    margin-right: 8px;
+}
+
+/* Botão salvar */
+#btnSalvarRestaurante {
+    background: #ff9800;
+    border-color: #ff9800;
+    color: white;
+}
+
+#btnSalvarRestaurante:hover {
+    background: #e68900;
+}
+
+/* Botão cancelar */
+#btnCancelarEdicao {
+    background: #f5f5f5;
+}
 
 /* RESPONSIVO */
 @media (max-width:900px){
