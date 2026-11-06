@@ -14,3 +14,5 @@ Cada ambiente tem as URLs do BFF e de autenticação, o token fixo e a chave de 
 Para valores só seus, como o token, crie `frontend/ambientes/<ambiente>.local.env`, que não vai para o git. Variáveis definidas no shell ou no CI têm prioridade sobre os arquivos. Depois de alterar um valor, reinicie o servidor ou refaça o build.
 
 O token é embutido no JavaScript enviado ao navegador: mantenha-o vazio em produção.
+
+Login e cadastro chamam o `tasty-auth-service` em todos os ambientes, mesmo com os dados do painel em mock. Para usar as telas sem o serviço rodando, coloque `NEXT_PUBLIC_USE_AUTH_MOCKS=true` em `frontend/ambientes/dev.local.env`.

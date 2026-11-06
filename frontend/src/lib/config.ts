@@ -17,5 +17,8 @@ export const ACCESS_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN || null;
 /** Quando verdadeiro, os serviços de src/services devolvem os dados de src/mocks. */
 export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS !== "false";
 
+/** Quando verdadeiro, login e cadastro são fictícios e não chamam o serviço de autenticação. */
+export const USE_AUTH_MOCKS = process.env.NEXT_PUBLIC_USE_AUTH_MOCKS === "true";
+
 /** Versão exibida nas telas de entrada do celular. */
 export const VERSAO_APP = "V1 - 11.09.2026";

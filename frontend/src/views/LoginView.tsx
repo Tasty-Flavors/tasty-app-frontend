@@ -3,29 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { CampoSenha, TelaEntrada, TOKEN_DEMONSTRACAO } from "@/components/auth/PartesAuth";
+import { CampoSenha, TelaEntrada } from "@/components/auth/PartesAuth";
 import { Button, Field } from "@/components/ui";
 import { setToken } from "@/lib/auth";
-import { AUTH_URL, USE_MOCKS } from "@/lib/config";
-
-async function autenticar(email: string, senha: string) {
-  if (USE_MOCKS) return TOKEN_DEMONSTRACAO;
-  let resposta: Response;
-  try {
-    resposta = await fetch(`${AUTH_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, senha }),
-    });
-  } catch {
-    throw new Error("Não foi possível conectar ao servidor. Tente novamente.");
-  }
-  if (resposta.status === 400 || resposta.status === 401 || resposta.status === 403) throw new Error("E-mail ou senha incorretos.");
-  if (!resposta.ok) throw new Error("Não foi possível entrar agora. Tente novamente.");
-  const dados = (await resposta.json()) as { accessToken?: string };
-  if (!dados.accessToken) throw new Error("Não foi possível entrar agora. Tente novamente.");
-  return dados.accessToken;
-}
+import { autenticar } from "@/services/auth";
 
 export function LoginView() {
   const router = useRouter();

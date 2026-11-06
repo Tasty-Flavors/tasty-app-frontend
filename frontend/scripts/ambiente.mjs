@@ -34,16 +34,16 @@ const definidasNoShell = Object.fromEntries(Object.entries(process.env).filter((
 const variaveis = { ...lerArquivo(`${ambiente}.env`), ...lerArquivo(`${ambiente}.local.env`), ...definidasNoShell };
 
 const usaMocks = variaveis.NEXT_PUBLIC_USE_MOCKS !== "false";
-if (!usaMocks) {
-  const faltando = ["NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_AUTH_URL"].filter((chave) => !variaveis[chave]);
-  if (faltando.length > 0) falhar(`Ambiente "${ambiente}" sem mocks precisa de ${faltando.join(" e ")}. Preencha em ambientes/${ambiente}.env.`);
-}
+const usaLoginFicticio = variaveis.NEXT_PUBLIC_USE_AUTH_MOCKS === "true";
+const obrigatorias = [...(usaMocks ? [] : ["NEXT_PUBLIC_API_URL"]), ...(usaLoginFicticio ? [] : ["NEXT_PUBLIC_AUTH_URL"])];
+const faltando = obrigatorias.filter((chave) => !variaveis[chave]);
+if (faltando.length > 0) falhar(`Ambiente "${ambiente}" precisa de ${faltando.join(" e ")}. Preencha em ambientes/${ambiente}.env.`);
 
 if (ambiente === "prod" && variaveis.NEXT_PUBLIC_ACCESS_TOKEN) {
   console.warn("\n[ambiente] ATENÇÃO: há NEXT_PUBLIC_ACCESS_TOKEN em prod. Ele será embutido no JavaScript público e qualquer visitante poderá lê-lo.\n");
 }
 
-console.log(`[ambiente] ${ambiente} | mocks: ${usaMocks ? "ligados" : "desligados"} | BFF: ${variaveis.NEXT_PUBLIC_API_URL || "(não definido)"} | token fixo: ${variaveis.NEXT_PUBLIC_ACCESS_TOKEN ? "sim" : "não"}`);
+console.log(`[ambiente] ${ambiente} | mocks: ${usaMocks ? "ligados" : "desligados"} | BFF: ${variaveis.NEXT_PUBLIC_API_URL || "(não definido)"} | login: ${usaLoginFicticio ? "fictício" : variaveis.NEXT_PUBLIC_AUTH_URL} | token fixo: ${variaveis.NEXT_PUBLIC_ACCESS_TOKEN ? "sim" : "não"}`);
 
 const next = createRequire(import.meta.url).resolve("next/dist/bin/next");
 const processo = spawn(process.execPath, [next, comando, ...argumentos], { cwd: raiz, stdio: "inherit", env: { ...process.env, ...variaveis } });

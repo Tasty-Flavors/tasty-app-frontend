@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { getToken } from "@/lib/auth";
-import { USE_MOCKS } from "@/lib/config";
+import { USE_AUTH_MOCKS } from "@/lib/config";
 import { desbloquearAudio } from "@/lib/som";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { usePreferencias } from "@/lib/usePreferencias";
@@ -22,8 +22,8 @@ const TELA_ESTREITA = "(max-width: 1279px)";
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  // Com mocks não há sessão a validar; sem mocks, só libera depois de achar o token.
-  const [autorizado, setAutorizado] = useState(USE_MOCKS);
+  // Com login fictício não há sessão a validar; com o real, só libera depois de achar o token.
+  const [autorizado, setAutorizado] = useState(USE_AUTH_MOCKS);
   // null = sem escolha da pessoa: o menu segue o tamanho da tela.
   const [escolhaRecolhido, setEscolhaRecolhido] = useState<boolean | null>(null);
   const telaEstreita = useMediaQuery(TELA_ESTREITA);
@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   useNarrador(prefs.narrador, tituloDaRota(pathname));
 
   useEffect(() => {
-    if (USE_MOCKS || getToken()) setAutorizado(true);
+    if (USE_AUTH_MOCKS || getToken()) setAutorizado(true);
     else router.replace("/login");
   }, [router]);
 

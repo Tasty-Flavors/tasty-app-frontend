@@ -5,9 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ChangeEvent, type ReactNode } from "react";
 import { Button, Icon, Notice } from "@/components/ui";
 import { getStoredToken } from "@/lib/auth";
-import { USE_MOCKS, VERSAO_APP } from "@/lib/config";
-
-export const TOKEN_DEMONSTRACAO = "token-de-demonstracao";
+import { USE_AUTH_MOCKS, VERSAO_APP } from "@/lib/config";
 
 interface PropsSenha {
   id: string;
@@ -85,7 +83,7 @@ export function TelaEntrada({ titulo, subtitulo, avisoDemonstracao, erro, rodape
         <h1 className="login__title">{titulo}</h1>
         <p className="login__subtitulo">{subtitulo}</p>
 
-        {USE_MOCKS && <Notice tom="info" className="login__error">{avisoDemonstracao}</Notice>}
+        {USE_AUTH_MOCKS && <Notice tom="info" className="login__error">{avisoDemonstracao}</Notice>}
         {erro && <Notice tom="perigo" role="alert" className="login__error">{erro}</Notice>}
 
         {children}

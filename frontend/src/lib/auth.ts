@@ -1,12 +1,24 @@
-import { ACCESS_TOKEN } from "./config";
+import { ACCESS_TOKEN, USE_AUTH_MOCKS } from "./config";
 
 const TOKEN_KEY = "accessToken";
 
-/** Token do login feito neste navegador. */
+/** Falso para JWT vencido ou para o que não é JWT, como um token salvo no modo de demonstração. */
+function jwtVigente(token: string) {
+  try {
+    const carga = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const { exp } = JSON.parse(window.atob(carga)) as { exp?: number };
+    return typeof exp === "number" && exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
+}
+
+/** Token do login feito neste navegador, se ainda valer. */
 export function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    return window.localStorage.getItem(TOKEN_KEY);
+    const token = window.localStorage.getItem(TOKEN_KEY);
+    return token && (USE_AUTH_MOCKS || jwtVigente(token)) ? token : null;
   } catch {
     return null;
   }
