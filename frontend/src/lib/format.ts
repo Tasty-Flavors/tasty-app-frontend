@@ -44,3 +44,40 @@ export function iniciais(nome: string) {
     .map((p) => p[0]!.toUpperCase())
     .join("");
 }
+
+const soDigitos = (v: string, max: number) => v.replace(/\D/g, "").slice(0, max);
+
+export function mascaraCpf(v: string) {
+  return soDigitos(v, 11).replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
+export function mascaraCnpj(v: string) {
+  return soDigitos(v, 14)
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
+}
+
+export function mascaraCep(v: string) {
+  return soDigitos(v, 8).replace(/^(\d{5})(\d)/, "$1-$2");
+}
+
+export function mascaraTelefone(v: string) {
+  const d = soDigitos(v, 11);
+  const meio = d.length > 10 ? 7 : 6;
+  if (d.length <= 2) return d;
+  if (d.length <= meio) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, meio)}-${d.slice(meio)}`;
+}
+
+/** Converte "AAAA-MM-DD" de um input de data para ISO no fuso local. */
+export function dataLocalParaIso(valor: string) {
+  return new Date(`${valor}T12:00:00`).toISOString();
+}
+
+/** Data de hoje (ou daqui a N dias) no formato de um input de data. */
+export function dataParaInput(diasAFrente = 0) {
+  const d = new Date(Date.now() + diasAFrente * 86400000);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}

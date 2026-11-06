@@ -16,15 +16,44 @@ let produtos = structuredClone(produtosMock);
 
 /* ---------- Pedidos ---------- */
 
+const INTERVALO_PEDIDO_SIMULADO_MS = 90_000;
+const MAX_PEDIDOS_NOVOS_SIMULADOS = 5;
+let ultimoPedidoSimulado = Date.now();
+
+/** Só no modo mock: um pedido chega de tempos em tempos, para exercitar o quadro e o alerta sonoro. */
+function simularPedidoNovo() {
+  const novos = pedidos.filter((p) => p.status === "novo").length;
+  if (Date.now() - ultimoPedidoSimulado < INTERVALO_PEDIDO_SIMULADO_MS || novos >= MAX_PEDIDOS_NOVOS_SIMULADOS) return;
+  ultimoPedidoSimulado = Date.now();
+  const numero = Math.max(...pedidos.map((p) => p.numero)) + 1;
+  pedidos = [
+    {
+      id: `p${Date.now()}`, numero, cliente: "Mariana Silva", telefone: "(51) 99777-3434", status: "novo", tipo: "entrega",
+      pagamento: "PIX", criadoEm: new Date().toISOString(), endereco: "Rua Sarmento Leite, 320 — Farroupilha", taxaEntrega: 6,
+      itens: [{ nome: "X-Salada", quantidade: 1, precoUnitario: 26 }, { nome: "Suco de laranja", quantidade: 1, precoUnitario: 9 }],
+      total: 41,
+    },
+    ...pedidos,
+  ];
+}
+
 /** TODO backend: GET /v1/restaurante/pedidos */
 export async function listarPedidos(): Promise<Pedido[]> {
-  if (USE_MOCKS) return mockResponse(pedidos);
+  if (USE_MOCKS) {
+    simularPedidoNovo();
+    return mockResponse(pedidos);
+  }
   return api.get<Pedido[]>("/v1/restaurante/pedidos");
 }
 
 export async function atualizarStatusPedido(id: string, status: StatusPedido, extra?: Partial<Pedido>) {
   if (USE_MOCKS) {
     pedidos = pedidos.map((p) => (p.id === id ? { ...p, ...extra, status } : p));
+    if (status === "concluido") {
+      entregadores = entregadores.map((e) =>
+        e.pedidoId === id ? { ...e, status: "disponivel", pedidoId: undefined, destino: undefined, entregasHoje: e.entregasHoje + 1 } : e,
+      );
+    }
     if (extra?.entregadorId) {
       entregadores = entregadores.map((e) =>
         e.id === extra.entregadorId ? { ...e, status: "em_entrega", pedidoId: id, destino: { x: 0.2 + Math.random() * 0.6, y: 0.15 + Math.random() * 0.7 } } : e,
@@ -55,6 +84,14 @@ export async function cadastrarEntregador(novo: Omit<Entregador, "id" | "posicao
   return api.post<Entregador>("/v1/restaurante/entregadores", novo as unknown as Record<string, unknown>);
 }
 
+export async function alterarDisponibilidade(id: string, status: "disponivel" | "offline") {
+  if (USE_MOCKS) {
+    entregadores = entregadores.map((e) => (e.id === id ? { ...e, status, atualizadoEm: new Date().toISOString() } : e));
+    return mockResponse(entregadores);
+  }
+  return api.patch<Entregador[]>(`/v1/restaurante/entregadores/${id}`, { status });
+}
+
 export async function removerEntregador(id: string) {
   if (USE_MOCKS) {
     entregadores = entregadores.filter((e) => e.id !== id);
@@ -76,8 +113,10 @@ export async function obterPosicoes(): Promise<Pick<Entregador, "id" | "posicao"
       const dy = e.destino.y - e.posicao.y;
       const dist = Math.hypot(dx, dy);
       const passo = 0.012;
-      const posicao = dist < passo ? { ...e.destino } : { x: e.posicao.x + (dx / dist) * passo, y: e.posicao.y + (dy / dist) * passo };
-      return { ...e, posicao, atualizadoEm: new Date().toISOString() };
+      const atualizadoEm = new Date().toISOString();
+      // Ao chegar, segue para outro ponto: mantém o mapa em movimento na demonstração.
+      if (dist < passo) return { ...e, posicao: { ...e.destino }, destino: { x: 0.12 + Math.random() * 0.76, y: 0.12 + Math.random() * 0.76 }, atualizadoEm };
+      return { ...e, posicao: { x: e.posicao.x + (dx / dist) * passo, y: e.posicao.y + (dy / dist) * passo }, atualizadoEm };
     });
     return mockResponse(entregadores.map(({ id, posicao, status, atualizadoEm }) => ({ id, posicao, status, atualizadoEm })), 50);
   }
@@ -128,13 +167,25 @@ export async function listarProdutos(): Promise<Produto[]> {
   return api.get<Produto[]>("/v1/cardapio/produtos");
 }
 
-export async function salvarProduto(produto: Produto) {
+/** Produto sem `id` é criado; com `id`, atualizado. A imagem vai junto em multipart. */
+export async function salvarProduto(produto: Produto, imagem?: File) {
   if (USE_MOCKS) {
-    const existe = produtos.some((p) => p.id === produto.id);
-    produtos = existe ? produtos.map((p) => (p.id === produto.id ? produto : p)) : [...produtos, { ...produto, id: `pr${Date.now()}` }];
+    const salvo = imagem ? { ...produto, imagem: URL.createObjectURL(imagem) } : produto;
+    produtos = produto.id ? produtos.map((p) => (p.id === produto.id ? salvo : p)) : [...produtos, { ...salvo, id: `pr${Date.now()}` }];
     return mockResponse(produtos);
   }
-  return api.put<Produto[]>(`/v1/cardapio/produtos/${produto.id}`, produto as unknown as Record<string, unknown>);
+  const form = new FormData();
+  form.append("produto", JSON.stringify(produto));
+  if (imagem) form.append("imagem", imagem);
+  return produto.id ? api.put<Produto[]>(`/v1/cardapio/produtos/${produto.id}`, form) : api.post<Produto[]>("/v1/cardapio/produtos", form);
+}
+
+export async function removerProduto(id: string) {
+  if (USE_MOCKS) {
+    produtos = produtos.filter((p) => p.id !== id);
+    return mockResponse(produtos);
+  }
+  return api.delete<Produto[]>(`/v1/cardapio/produtos/${id}`);
 }
 
 export async function atualizarPrecos(alteracoes: { id: string; preco: number }[]) {

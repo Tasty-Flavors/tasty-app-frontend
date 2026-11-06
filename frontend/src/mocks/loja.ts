@@ -12,7 +12,7 @@ export const restauranteMock: Restaurante = {
   endereco: "Avenida Fulano de Tal, 1212 — Porto Alegre, RS",
   descricao: "Lanches, pratos feitos e açaí desde 2019. Entrega rápida no Centro Histórico e Cidade Baixa.",
   imagem: undefined,
-  notaMedia: 4.7,
+  notaMedia: 4.5,
   totalAvaliacoes: 135,
   tempoRetiradaMin: 15,
   tempoEntregaMin: 45,
