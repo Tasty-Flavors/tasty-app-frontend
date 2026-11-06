@@ -95,6 +95,7 @@
 
 /* Modo escuro — ativado pela tela de Acessibilidade (data-theme="dark" no <html>) */
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --tasty-bg-page: #151515;
   --tasty-bg-canvas: #101010;
   --tasty-bg-surface: #2a2a2a;
@@ -128,6 +129,14 @@
   --tasty-text-danger: #a34700;
   --tasty-bg-danger: #d55e00;
   --tasty-bg-danger-subtle: #fbe9dc;
+}
+
+/* Os dois juntos: mantém os fundos sutis escuros e o texto legível sobre eles. */
+:root[data-theme="dark"][data-vision="cvd"] {
+  --tasty-text-positive: #6db3f2;
+  --tasty-bg-success-subtle: #0d2a45;
+  --tasty-text-danger: #ffa366;
+  --tasty-bg-danger-subtle: #3d2008;
 }
 
 :root[data-motion="reduced"] *,
