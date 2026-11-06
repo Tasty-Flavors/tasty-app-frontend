@@ -143,10 +143,13 @@ h4 {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .grid--3 {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+@media (max-width: 640px) {
   .grid--2 {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -156,5 +159,12 @@ h4 {
   .grid--4 {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 12px;
+  }
+}
+
+/* Em celulares bem estreitos, valores em reais não cabem em duas colunas. */
+@media (max-width: 340px) {
+  .grid--4 {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

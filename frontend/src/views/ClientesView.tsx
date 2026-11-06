@@ -88,11 +88,11 @@ export function ClientesView() {
                         </div>
                       </div>
                     </td>
-                    <td>{c.bairro || "—"}</td>
-                    <td><Badge tom={TOM[c.segmento]}>{c.segmento}</Badge></td>
-                    <td className="num">{c.pedidos}</td>
-                    <td className="num">{formatarMoeda(c.totalGasto)}</td>
-                    <td>{c.pedidos > 0 ? formatarData(c.ultimoPedido) : "—"}</td>
+                    <td data-rotulo="Bairro">{c.bairro || "—"}</td>
+                    <td data-rotulo="Segmento"><Badge tom={TOM[c.segmento]}>{c.segmento}</Badge></td>
+                    <td data-rotulo="Pedidos" className="num">{c.pedidos}</td>
+                    <td data-rotulo="Total gasto" className="num">{formatarMoeda(c.totalGasto)}</td>
+                    <td data-rotulo="Último pedido">{c.pedidos > 0 ? formatarData(c.ultimoPedido) : "—"}</td>
                   </tr>
                 ))}
               </tbody>

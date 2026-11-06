@@ -139,9 +139,9 @@ export function PrecosView() {
                   return (
                     <tr key={p.id} className={baixa ? "linha--margem-baixa" : undefined}>
                       <td className="table__strong">{p.nome}</td>
-                      <td>{p.categoria}</td>
-                      <td className="num">{formatarMoeda(p.custo)}</td>
-                      <td className="num">
+                      <td data-rotulo="Categoria">{p.categoria}</td>
+                      <td data-rotulo="Custo" className="num">{formatarMoeda(p.custo)}</td>
+                      <td data-rotulo="Preço" className="num">
                         <input
                           className="field__control field__control--compacto table__input"
                           type="number"
@@ -152,8 +152,8 @@ export function PrecosView() {
                           onChange={(e) => setRascunho((r) => ({ ...r, [p.id]: e.target.value }))}
                         />
                       </td>
-                      <td className={baixa ? "num t-danger" : "num"}>{formatarPercentual(m)}</td>
-                      <td className="num">{formatarMoeda(preco - p.custo)}</td>
+                      <td data-rotulo="Margem" className={baixa ? "num t-danger" : "num"}>{formatarPercentual(m)}</td>
+                      <td data-rotulo="Lucro" className="num">{formatarMoeda(preco - p.custo)}</td>
                       <td>
                         <div className="tag-lista">
                           {baixa && <Badge tom="perigo" icone="alerta">Margem baixa</Badge>}

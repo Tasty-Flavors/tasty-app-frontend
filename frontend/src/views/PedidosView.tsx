@@ -328,11 +328,11 @@ export function PedidosView() {
                   {historico.map((p) => (
                     <tr key={p.id}>
                       <td className="table__strong">#{p.numero}</td>
-                      <td>{p.cliente}</td>
-                      <td>{p.tipo === "entrega" ? "Entrega" : "Retirada"}</td>
-                      <td>{formatarHora(p.criadoEm)}</td>
-                      <td><Badge tom={TOM_STATUS[p.status]} icone={p.status === "concluido" ? "check" : "fechar"}>{ROTULO_STATUS[p.status]}</Badge></td>
-                      <td className="num">{formatarMoeda(p.total)}</td>
+                      <td data-rotulo="Cliente">{p.cliente}</td>
+                      <td data-rotulo="Tipo">{p.tipo === "entrega" ? "Entrega" : "Retirada"}</td>
+                      <td data-rotulo="Horário">{formatarHora(p.criadoEm)}</td>
+                      <td data-rotulo="Situação"><Badge tom={TOM_STATUS[p.status]} icone={p.status === "concluido" ? "check" : "fechar"}>{ROTULO_STATUS[p.status]}</Badge></td>
+                      <td data-rotulo="Total" className="num">{formatarMoeda(p.total)}</td>
                       <td><Button pequeno onClick={() => setSelecionadoId(p.id)}>Detalhes</Button></td>
                     </tr>
                   ))}

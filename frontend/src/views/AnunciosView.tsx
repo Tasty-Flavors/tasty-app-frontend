@@ -97,12 +97,12 @@ export function AnunciosView() {
                       <div className="table__strong">{a.titulo}</div>
                       <div className="t-small t-muted">{a.formato}</div>
                     </td>
-                    <td className="t-small">{formatarData(a.inicio)} a {formatarData(a.fim)}</td>
-                    <td><Badge tom={STATUS[a.status].tom}>{STATUS[a.status].rotulo}</Badge></td>
-                    <td className="num">{formatarMoeda(a.orcamentoDiario)}</td>
-                    <td className="num">{formatarMoeda(a.gasto)}</td>
-                    <td className="num">{formatarNumero(a.cliques)}</td>
-                    <td className="num">{formatarNumero(a.pedidos)}</td>
+                    <td data-rotulo="Período" className="t-small">{formatarData(a.inicio)} a {formatarData(a.fim)}</td>
+                    <td data-rotulo="Situação"><Badge tom={STATUS[a.status].tom}>{STATUS[a.status].rotulo}</Badge></td>
+                    <td data-rotulo="Orçamento/dia" className="num">{formatarMoeda(a.orcamentoDiario)}</td>
+                    <td data-rotulo="Gasto" className="num">{formatarMoeda(a.gasto)}</td>
+                    <td data-rotulo="Cliques" className="num">{formatarNumero(a.cliques)}</td>
+                    <td data-rotulo="Pedidos" className="num">{formatarNumero(a.pedidos)}</td>
                     <td>{a.status !== "encerrado" && <Button pequeno disabled={ocupado} onClick={() => alternar(a)}>{a.status === "ativo" ? "Pausar" : "Retomar"}</Button>}</td>
                   </tr>
                 ))}

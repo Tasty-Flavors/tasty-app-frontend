@@ -19,7 +19,7 @@ export function ChartTable({ titulo, dados, formatar }: { titulo: string; dados:
 
 export function ChartTooltip({ item, formatar, xPct, yPct }: { item: SerieDiaria; formatar: (v: number) => string; xPct: number; yPct: number }) {
   return (
-    <div className="chart__tooltip" style={{ left: `${xPct}%`, top: `${yPct}%` }}>
+    <div className="chart__tooltip" style={{ left: `clamp(48px, ${xPct}%, calc(100% - 48px))`, top: `${yPct}%` }}>
       <strong>{formatar(item.valor)}</strong>
       {item.rotulo}
     </div>

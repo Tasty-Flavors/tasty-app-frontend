@@ -163,8 +163,8 @@ export function PrivacidadeView() {
               {equipe.map((u) => (
                 <tr key={u.id}>
                   <td className="table__strong">{u.nome}</td>
-                  <td>{u.email}</td>
-                  <td>
+                  <td data-rotulo="E-mail">{u.email}</td>
+                  <td data-rotulo="Permissão">
                     {u.papel === "Proprietário" ? (
                       <Badge tom="marca">Proprietário</Badge>
                     ) : (

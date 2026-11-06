@@ -212,12 +212,12 @@ export function EntregadoresView() {
               {entregadores.map((e) => (
                 <tr key={e.id}>
                   <td className="table__strong">{e.nome}</td>
-                  <td>{e.cpf}</td>
-                  <td>{e.veiculo}</td>
-                  <td>{e.placa ?? "—"}</td>
-                  <td>{e.chavePix}</td>
-                  <td>{e.tipoChavePix}</td>
-                  <td>
+                  <td data-rotulo="CPF">{e.cpf}</td>
+                  <td data-rotulo="Veículo">{e.veiculo}</td>
+                  <td data-rotulo="Placa">{e.placa ?? "—"}</td>
+                  <td data-rotulo="Chave PIX">{e.chavePix}</td>
+                  <td data-rotulo="Tipo">{e.tipoChavePix}</td>
+                  <td data-rotulo="Online">
                     <Toggle ligado={e.status !== "offline"} disabled={e.status === "em_entrega" || ocupado} rotulo={`${e.nome} online`} onChange={(v) => alternar(e, v)} />
                   </td>
                   <td>

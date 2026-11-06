@@ -81,9 +81,9 @@ export function FinanceiroView() {
                 {visiveis.map((l) => (
                   <tr key={l.id}>
                     <td>{formatarData(l.data)}</td>
-                    <td>{l.descricao}</td>
-                    <td><Badge tom={STATUS_LANCAMENTO[l.status].tom}>{STATUS_LANCAMENTO[l.status].rotulo}</Badge></td>
-                    <td className={l.valor < 0 ? "num t-danger" : "num t-positive"}>{formatarMoeda(l.valor)}</td>
+                    <td data-rotulo="Descrição">{l.descricao}</td>
+                    <td data-rotulo="Situação"><Badge tom={STATUS_LANCAMENTO[l.status].tom}>{STATUS_LANCAMENTO[l.status].rotulo}</Badge></td>
+                    <td data-rotulo="Valor" className={l.valor < 0 ? "num t-danger" : "num t-positive"}>{formatarMoeda(l.valor)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -107,9 +107,9 @@ export function FinanceiroView() {
               {faturas.map((f) => (
                 <tr key={f.id}>
                   <td className="table__strong">{f.competencia}</td>
-                  <td>{formatarData(f.vencimento)}</td>
-                  <td><Badge tom={STATUS_FATURA[f.status].tom}>{STATUS_FATURA[f.status].rotulo}</Badge></td>
-                  <td className="num">{formatarMoeda(f.valor)}</td>
+                  <td data-rotulo="Vencimento">{formatarData(f.vencimento)}</td>
+                  <td data-rotulo="Situação"><Badge tom={STATUS_FATURA[f.status].tom}>{STATUS_FATURA[f.status].rotulo}</Badge></td>
+                  <td data-rotulo="Valor" className="num">{formatarMoeda(f.valor)}</td>
                 </tr>
               ))}
             </tbody>

@@ -3,6 +3,7 @@
   display: grid;
   grid-template-columns: var(--tasty-sidebar-width) minmax(0, 1fr);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 .shell--recolhido {
   grid-template-columns: 76px minmax(0, 1fr);
@@ -13,7 +14,9 @@
   padding: 36px 40px 64px;
 }
 .main__inner {
-  max-width: 1180px;
+  /* Centralizado: em monitores grandes a sobra não fica toda de um lado. */
+  max-width: 1440px;
+  margin-inline: auto;
 }
 
 /* ---------- Menu lateral ---------- */
@@ -21,6 +24,7 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100dvh;
   overflow-y: auto;
   background: var(--tasty-bg-sidebar);
   color: #000;
@@ -106,11 +110,24 @@
   place-items: center;
 }
 @media (min-width: 901px) {
+  /* A barra de rolagem tiraria os ícones do centro; a rolagem continua funcionando. */
+  .shell--recolhido .sidebar {
+    scrollbar-width: none;
+  }
   .shell--recolhido .sidebar__label,
   .shell--recolhido .sidebar__group,
-  .shell--recolhido .sidebar__brand span,
-  .shell--recolhido .sidebar__badge {
+  .shell--recolhido .sidebar__brand span {
     display: none;
+  }
+  /* O selo continua visível: é o alerta de pedido novo e de estoque. */
+  .shell--recolhido .sidebar__badge {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    min-width: 18px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 11px;
   }
   .shell--recolhido .sidebar__item {
     justify-content: center;
@@ -158,17 +175,20 @@
   .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
-    width: var(--tasty-sidebar-width);
+    width: min(var(--tasty-sidebar-width), 85vw);
     z-index: 50;
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    /* Fechado, sai também da ordem de foco do teclado. */
+    visibility: hidden;
+    transition: transform 0.2s ease, visibility 0.2s;
   }
   .sidebar--aberto {
     transform: none;
+    visibility: visible;
     box-shadow: var(--tasty-shadow-card);
   }
   .main {
-    padding: 20px 16px 110px;
+    padding: 24px 24px 110px;
   }
   .topbar {
     display: flex;
@@ -177,7 +197,7 @@
     position: sticky;
     top: 0;
     z-index: 30;
-    padding: 14px 16px;
+    padding: calc(8px + env(safe-area-inset-top)) 12px 8px;
     background: var(--tasty-bg-sidebar);
     color: #000;
   }
@@ -192,8 +212,8 @@
   .topbar button {
     display: grid;
     place-items: center;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
   }
   .topbar svg {
     width: 24px;
@@ -216,7 +236,8 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    min-width: 64px;
+    flex: 1;
+    min-width: 0;
     font-family: var(--tasty-font-title);
     font-size: 12px;
     font-weight: 500;
@@ -225,7 +246,11 @@
   .tabbar__item:hover {
     text-decoration: none;
   }
+  .topbar__logo {
+    display: none !important;
+  }
   .tabbar__pill {
+    position: relative;
     display: grid;
     place-items: center;
     width: 56px;
@@ -255,54 +280,108 @@
   .card {
     padding: 16px;
   }
+  .card--sem-padding {
+    padding: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 20px 16px 110px;
+  }
+}
+
+/* Celular deitado: as barras fixas não podem tomar a pouca altura disponível. */
+@media (max-width: 900px) and (max-height: 500px) {
+  .topbar {
+    position: static;
+  }
+  .tabbar {
+    padding-block: 4px calc(4px + env(safe-area-inset-bottom));
+  }
+  .tabbar__pill {
+    height: 24px;
+  }
 }
 
 /* ---------- Login ---------- */
 .login {
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
   padding: 32px 16px;
-  background: var(--tasty-bg-brand);
+  background: var(--tasty-bg-page);
+  font-family: var(--tasty-font-group);
+}
+.login .btn,
+.login .field__control,
+.login .link-botao {
+  font-family: var(--tasty-font-group);
+}
+/* A imagem de referência não mostra rótulos: seguem disponíveis para leitores de tela. */
+.login .field__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 .login__box {
-  width: min(460px, 100%);
-  padding: clamp(24px, 5vw, 40px);
-  border-radius: 20px;
-  background: var(--tasty-bg-surface);
-  box-shadow: var(--tasty-shadow-card);
+  width: min(628px, 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 18px;
 }
 .login__logo {
-  width: 104px;
-  height: 104px;
-  border-radius: 24px;
-  background: var(--tasty-bg-brand);
+  width: clamp(120px, 30vw, 172px);
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background: var(--tasty-orange-400);
   display: grid;
   place-items: center;
 }
 .login__logo img {
-  width: 88px;
-  height: 88px;
+  width: 84%;
+  height: auto;
 }
 .login__title {
-  font-size: 28px;
+  margin-top: 14px;
   font-family: var(--tasty-font-group);
+  font-size: clamp(26px, 7vw, 36px);
   font-weight: 700;
   text-align: center;
 }
+.login__subtitulo {
+  margin-bottom: 8px;
+  color: var(--tasty-text-primary);
+  text-align: center;
+}
 .login__form {
-  width: 100%;
+  width: min(440px, 100%);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 28px;
+}
+.login__form .field__control {
+  min-height: 60px;
+  padding-inline: 14px;
+  border-color: var(--tasty-gray-200);
+}
+.login__form .field__control::placeholder {
+  color: var(--tasty-text-muted);
+}
+.login__form .btn {
+  min-height: 48px;
 }
 .login__password {
   position: relative;
+}
+.login__password input {
+  padding-right: 44px;
 }
 .login__password button {
   position: absolute;
@@ -313,6 +392,7 @@
   height: 28px;
   display: grid;
   place-items: center;
+  color: var(--tasty-text-muted);
 }
 .login__password button svg {
   width: 20px;
@@ -323,24 +403,135 @@
 }
 .login__social {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  width: 100%;
+  /* Os botões não quebram linha: sem espaço para dois, empilham. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 12px 40px;
+  width: min(488px, 100%);
+  margin-top: 28px;
 }
 .login__social .btn {
-  font-size: 14px;
-  font-weight: 500;
+  min-height: 50px;
+  border-color: var(--tasty-text-primary);
+  font-size: 15px;
+  font-weight: 400;
 }
 .login__social svg {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
 }
 .login__divider {
   width: 100%;
   height: 1px;
-  background: var(--tasty-border-subtle);
-  margin: 6px 0;
+  border: 0;
+  background: var(--tasty-gray-200);
+  margin: 28px 0 0;
 }
 .login__error {
-  width: 100%;
+  width: min(440px, 100%);
+}
+.login .link-botao {
+  color: var(--tasty-text-link-login);
+}
+.login__versao {
+  display: none;
+}
+.login__aviso {
+  text-align: center;
+}
+
+/* Celular: tela inteira na cor da marca, com os campos em destaque. */
+@media (max-width: 640px) {
+  .login {
+    --largura-form: max(66%, 270px);
+    place-items: start stretch;
+    padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    background: var(--tasty-orange-400);
+    color: var(--tasty-gray-1000);
+  }
+  .login__box {
+    width: 100%;
+    min-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    gap: 14px;
+  }
+  .login__logo {
+    width: 160px;
+    background: transparent;
+  }
+  .login__logo img {
+    width: 100%;
+  }
+  .login__title {
+    margin: 6px 0 14px;
+    font-size: 25px;
+  }
+  .login__subtitulo,
+  .login__divider {
+    display: none;
+  }
+  .login__error,
+  .login__form {
+    width: var(--largura-form);
+  }
+  .login__error {
+    color: var(--tasty-gray-1000);
+  }
+  .login__form {
+    gap: 14px;
+  }
+  .login .field__label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    color: var(--tasty-gray-1000);
+    font-family: var(--tasty-font-group);
+    font-weight: 600;
+  }
+  .login__form .field__control {
+    min-height: 44px;
+    border-color: transparent;
+    background-color: var(--tasty-gray-0);
+    color: var(--tasty-gray-900);
+  }
+  .login__form .field__control::placeholder {
+    color: var(--tasty-gray-600);
+  }
+  .login__password button {
+    color: var(--tasty-gray-600);
+  }
+  .login__form .btn {
+    margin-top: 4px;
+    min-height: 44px;
+  }
+  .login__social {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: var(--largura-form);
+    margin-top: 14px;
+  }
+  .login__social .btn {
+    min-height: 40px;
+    padding: 0 4px;
+    gap: 4px;
+    border-color: var(--tasty-gray-1000);
+    background: var(--tasty-gray-0);
+    color: var(--tasty-gray-1000);
+    font-size: 11px;
+  }
+  .login__social svg {
+    width: 14px;
+    height: 14px;
+  }
+  .login__box > p {
+    font-size: 14px;
+    text-align: center;
+  }
+  .login__versao {
+    display: block;
+    margin-top: auto;
+    padding-top: 24px;
+    font-family: var(--tasty-font-group);
+    font-weight: 600;
+  }
 }

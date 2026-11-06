@@ -113,11 +113,11 @@ export function PromocoesView() {
                       <div className="table__strong">{p.titulo}</div>
                       <div className="t-small t-muted">{descreverBeneficio(p)}</div>
                     </td>
-                    <td>{p.aplicaEm}</td>
-                    <td className="t-small">{formatarData(p.inicio)} a {formatarData(p.fim)}</td>
-                    <td><Badge tom={STATUS[p.status].tom}>{STATUS[p.status].rotulo}</Badge></td>
-                    <td className="num">{formatarNumero(p.usos)}</td>
-                    <td className="num">{formatarMoeda(p.receitaGerada)}</td>
+                    <td data-rotulo="Vale para">{p.aplicaEm}</td>
+                    <td data-rotulo="Período" className="t-small">{formatarData(p.inicio)} a {formatarData(p.fim)}</td>
+                    <td data-rotulo="Situação"><Badge tom={STATUS[p.status].tom}>{STATUS[p.status].rotulo}</Badge></td>
+                    <td data-rotulo="Usos" className="num">{formatarNumero(p.usos)}</td>
+                    <td data-rotulo="Receita" className="num">{formatarMoeda(p.receitaGerada)}</td>
                     <td>{p.status !== "encerrada" && <Button pequeno disabled={ocupado} onClick={() => encerrar(p.id)}>Encerrar</Button>}</td>
                   </tr>
                 ))}

@@ -227,8 +227,8 @@ export function EstoqueView() {
                         <div className="table__strong">{i.nome}</div>
                         <div className="t-small t-muted">Lote {i.lote} · {i.fornecedor}</div>
                       </td>
-                      <td>{i.categoria}</td>
-                      <td>
+                      <td data-rotulo="Categoria">{i.categoria}</td>
+                      <td data-rotulo="Nível vs mínimo">
                         <div className="nivel">
                           <span className={baixo ? "t-small t-danger" : "t-small"}>{numero(i.quantidade)} / {numero(i.minimo)} {i.unidade}</span>
                           <div className="progress" aria-hidden="true">
@@ -236,11 +236,11 @@ export function EstoqueView() {
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td data-rotulo="Validade">
                         <div className="t-small">{formatarData(i.validade)}</div>
                         <BadgeValidade validade={i.validade} />
                       </td>
-                      <td className="num">{formatarMoeda(i.quantidade * i.custoUnitario)}</td>
+                      <td data-rotulo="Valor" className="num">{formatarMoeda(i.quantidade * i.custoUnitario)}</td>
                       <td><Button pequeno onClick={() => setItemMovimento(i.id)}>Registrar</Button></td>
                     </tr>
                   );
@@ -270,10 +270,10 @@ export function EstoqueView() {
                 {movimentos.map((m) => (
                   <tr key={m.id}>
                     <td>{formatarData(m.data)}</td>
-                    <td>{nomeItem(m.itemId)}</td>
-                    <td><Badge tom={ROTULO_MOVIMENTO[m.tipo].tom}>{ROTULO_MOVIMENTO[m.tipo].rotulo}</Badge></td>
-                    <td className="num">{numero(m.quantidade)}</td>
-                    <td>{m.motivo}</td>
+                    <td data-rotulo="Item">{nomeItem(m.itemId)}</td>
+                    <td data-rotulo="Tipo"><Badge tom={ROTULO_MOVIMENTO[m.tipo].tom}>{ROTULO_MOVIMENTO[m.tipo].rotulo}</Badge></td>
+                    <td data-rotulo="Quantidade" className="num">{numero(m.quantidade)}</td>
+                    <td data-rotulo="Motivo">{m.motivo}</td>
                   </tr>
                 ))}
               </tbody>

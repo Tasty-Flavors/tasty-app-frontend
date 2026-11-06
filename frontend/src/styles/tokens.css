@@ -62,6 +62,7 @@
   --tasty-text-danger: var(--tasty-red-700);
   --tasty-text-warning: var(--tasty-orange-700);
   --tasty-text-link: var(--tasty-orange-700);
+  --tasty-text-link-login: #4da3d9;
 
   /* Campos e botões: contraste de 3:1. Cartões e divisórias usam a sutil. */
   --tasty-border-default: var(--tasty-gray-550);

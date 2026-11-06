@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 360px;
+  max-width: min(360px, 100%);
   padding: 10px 16px;
   border-radius: var(--tasty-radius-lg);
   border: 1px solid var(--tasty-border-subtle);
@@ -176,7 +176,7 @@
 /* ---------- Pedidos ---------- */
 .quadro {
   display: grid;
-  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, minmax(190px, 1fr));
   gap: 16px;
   overflow-x: auto;
   padding-bottom: 8px;
@@ -225,7 +225,27 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+/* Tablet: as quatro colunas em duas linhas, tudo à vista. */
+@media (max-width: 1000px) {
+  .quadro {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/* Celular: uma coluna por vez, com a próxima aparecendo na borda para indicar a rolagem. */
+@media (max-width: 640px) {
+  .quadro {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 85%;
+    gap: 12px;
+    scroll-snap-type: x mandatory;
+  }
+  .quadro__coluna {
+    scroll-snap-align: start;
+  }
 }
 .pedido-itens {
   list-style: none;
@@ -244,7 +264,7 @@
   /* Isola os z-index altos do Leaflet, que passariam por cima dos painéis laterais. */
   isolation: isolate;
   width: 100%;
-  height: 440px;
+  height: clamp(300px, 55vh, 640px);
   border-radius: var(--tasty-radius-md);
   border: 1px solid var(--tasty-border-subtle);
   background: var(--tasty-bg-canvas);
@@ -579,9 +599,6 @@
   gap: 8px;
 }
 @media (max-width: 620px) {
-  .mapa {
-    height: 320px;
-  }
   .produto,
   .post {
     flex-wrap: wrap;
@@ -600,15 +617,14 @@
     right: 16px;
     bottom: 96px;
   }
+}
+@media (max-width: 640px) {
   .filtros .search {
     max-width: none;
     min-width: 100%;
   }
   .filtros select.field__control {
     width: 100%;
-  }
-  .quadro {
-    grid-template-columns: repeat(4, minmax(250px, 1fr));
   }
 }
 
@@ -631,10 +647,11 @@
   text-align: center;
 }
 .topbar__acao {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   color: inherit;
 }
 @media (min-width: 901px) {
@@ -658,4 +675,292 @@
 }
 .hbar--notas {
   grid-template-columns: 48px 1fr 56px;
+}
+
+/* ---------- Celular: formato de aplicativo ---------- */
+.tabbar__item--celular {
+  display: none;
+}
+.selo {
+  position: absolute;
+  top: -2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--tasty-radius-full);
+  background: var(--tasty-bg-danger);
+  color: var(--tasty-text-on-color);
+  font-family: var(--tasty-font-title);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  /* Toque com resposta de aplicativo: sem o flash do navegador nem atraso de clique. */
+  body {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .btn:active,
+  .pill:active,
+  .tabbar__item:active,
+  .pedido-card:active {
+    transform: scale(0.97);
+  }
+  .tabbar__item,
+  .topbar,
+  .pill {
+    user-select: none;
+  }
+
+  /* Barras */
+  .topbar,
+  .tabbar,
+  .sidebar {
+    background: var(--tasty-orange-400);
+  }
+  /* A mesma sidebar do desktop, adaptada ao toque e às bordas do aparelho. */
+  .sidebar {
+    width: min(300px, 85vw);
+    padding: calc(16px + env(safe-area-inset-top)) 0 calc(20px + env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .sidebar__item {
+    height: 44px;
+  }
+  .topbar__title {
+    display: none;
+  }
+  .topbar__logo {
+    display: block !important;
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+    transform: translateX(-50%);
+  }
+  .topbar__acao {
+    margin-left: auto;
+  }
+  .topbar {
+    min-height: 56px;
+  }
+  .tabbar {
+    padding: 6px 4px calc(8px + env(safe-area-inset-bottom));
+    border-top: 0;
+  }
+  .tabbar__item,
+  .tabbar__item[aria-current="page"] {
+    position: relative;
+    padding-bottom: 6px;
+    color: var(--tasty-gray-1000);
+    font-size: 11px;
+  }
+  .tabbar__item[aria-current="page"] {
+    font-weight: 700;
+  }
+  .tabbar__item[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 36px;
+    height: 2px;
+    margin-left: -18px;
+    border-radius: var(--tasty-radius-full);
+    background: var(--tasty-gray-1000);
+  }
+  .tabbar__pill,
+  .tabbar__item[aria-current="page"] .tabbar__pill {
+    width: 30px;
+    height: 24px;
+    background: transparent;
+  }
+  .tabbar__item--celular {
+    display: flex;
+  }
+  .tabbar__item--tablet {
+    display: none;
+  }
+
+  .main {
+    padding: 12px 12px calc(96px + env(safe-area-inset-bottom));
+  }
+  .main__inner {
+    animation: tela-entra 0.18s ease;
+  }
+  .stack {
+    gap: 16px;
+  }
+  .stack--sm {
+    gap: var(--tasty-space-md);
+  }
+  .grid {
+    gap: 12px;
+  }
+  .page-header {
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+  .page-header__title {
+    display: block;
+    font-size: 20px;
+  }
+  .page-header__subtitle {
+    margin-top: 0;
+    font-size: 13px;
+  }
+  .card {
+    padding: 14px;
+    border-color: transparent;
+    border-radius: var(--tasty-radius-md);
+  }
+  .card--sem-padding {
+    padding: 0;
+  }
+  .card__header {
+    margin-bottom: 10px;
+  }
+  .card__title {
+    font-size: 15px;
+  }
+
+  /* Cartão da loja: foto, dados e nota lado a lado. */
+  .loja-card {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  .loja-card:has(.form-edicao) {
+    flex-wrap: wrap;
+  }
+  .loja-card__info {
+    flex: 1 1 0;
+    gap: 10px;
+  }
+  .loja-card .avatar--g {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+  .loja-card__texto {
+    gap: 4px;
+    font-size: 13px;
+  }
+  .loja-card__texto .btn {
+    padding-inline: 10px;
+    font-size: 12px;
+    white-space: normal;
+  }
+  .loja-card__texto .btn svg {
+    display: none;
+  }
+  .nota-geral {
+    flex: none;
+    align-self: flex-start;
+    min-width: 0;
+    padding: 6px 8px;
+    border-radius: var(--tasty-radius-sm);
+    background: var(--tasty-bg-surface-alt);
+    gap: 1px;
+  }
+  .nota-geral .t-small {
+    font-size: 11px;
+  }
+  .nota-geral__valor {
+    font-size: 22px;
+  }
+  .nota-geral .stars svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  /* Ação principal: botão flutuante, ao alcance do polegar. */
+  .page-header .btn--primario {
+    position: fixed;
+    right: 16px;
+    bottom: calc(84px + env(safe-area-inset-bottom));
+    z-index: 20;
+    min-height: 52px;
+    padding-inline: 20px;
+    border-radius: var(--tasty-radius-full);
+    box-shadow: var(--tasty-shadow-card);
+  }
+  /* Salvar e Descartar só aparecem quando há o que salvar ou descartar. */
+  .page-header .btn:disabled {
+    display: none;
+  }
+  .main:has(.page-header .btn--primario) {
+    padding-bottom: calc(160px + env(safe-area-inset-bottom));
+  }
+  .toast-area {
+    bottom: calc(148px + env(safe-area-inset-bottom));
+  }
+
+  /* Filtros em uma linha só, com rolagem lateral. */
+  .pills {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .pills::-webkit-scrollbar {
+    display: none;
+  }
+  .quadro {
+    scrollbar-width: none;
+  }
+  .pill {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  /* Painéis sobem de baixo; o topo arrasta para fechar. */
+  .drawer {
+    top: auto;
+    width: 100%;
+    max-height: 88dvh;
+    border-left: 0;
+    border-radius: 20px 20px 0 0;
+    box-shadow: var(--tasty-shadow-card);
+    animation: painel-sobe 0.22s ease;
+  }
+  .drawer__header {
+    position: relative;
+    padding-block: 22px 12px;
+    border-bottom: 0;
+    touch-action: none;
+  }
+  .drawer__header::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 40px;
+    height: 4px;
+    margin-left: -20px;
+    border-radius: var(--tasty-radius-full);
+    background: var(--tasty-border-default);
+  }
+  .drawer__body {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+  }
+  .drawer__footer .btn {
+    flex: 1;
+  }
+}
+@keyframes tela-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes painel-sobe {
+  from {
+    transform: translateY(100%);
+  }
 }

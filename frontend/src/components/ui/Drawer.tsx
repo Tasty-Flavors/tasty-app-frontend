@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode, type TouchEvent } from "react";
+import { CONSULTA_CELULAR } from "@/lib/useMediaQuery";
 import { Button, IconButton } from "./Button";
+
+/** No celular, arrastar o topo do painel além disto para baixo o fecha. */
+const ARRASTE_PARA_FECHAR = 90;
 
 interface Props {
   aberto: boolean;
@@ -47,12 +51,34 @@ export function Drawer({ aberto, titulo, onFechar, rodape, children }: Props) {
     };
   }, [aberto]);
 
+  const inicioArraste = useRef<number | null>(null);
+  const distanciaArraste = useRef(0);
+
+  function aoIniciarArraste(e: TouchEvent) {
+    if (!window.matchMedia(CONSULTA_CELULAR).matches || (e.target as HTMLElement).closest("button")) return;
+    inicioArraste.current = e.touches[0]!.clientY;
+    distanciaArraste.current = 0;
+  }
+
+  function aoArrastar(e: TouchEvent) {
+    if (inicioArraste.current === null || !painel.current) return;
+    distanciaArraste.current = Math.max(0, e.touches[0]!.clientY - inicioArraste.current);
+    painel.current.style.transform = `translateY(${distanciaArraste.current}px)`;
+  }
+
+  function aoSoltarArraste() {
+    if (inicioArraste.current === null) return;
+    inicioArraste.current = null;
+    if (distanciaArraste.current > ARRASTE_PARA_FECHAR) fechar.current();
+    else if (painel.current) painel.current.style.transform = "";
+  }
+
   if (!aberto) return null;
   return (
     <>
       <div className="overlay" onClick={onFechar} />
       <div ref={painel} className="drawer" role="dialog" aria-modal="true" aria-labelledby={idTitulo} tabIndex={-1}>
-        <header className="drawer__header">
+        <header className="drawer__header" onTouchStart={aoIniciarArraste} onTouchMove={aoArrastar} onTouchEnd={aoSoltarArraste} onTouchCancel={aoSoltarArraste}>
           <h2 id={idTitulo} className="card__title">
             {titulo}
           </h2>

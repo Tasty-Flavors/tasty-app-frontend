@@ -4,9 +4,8 @@ import { useState } from "react";
 import type { SerieDiaria } from "@/types";
 import { ChartTable, ChartTooltip } from "./ChartTable";
 import { marcasEixo, passoRotulos, rotuloEixo } from "./escala";
+import { useDimensoesGrafico } from "./useDimensoesGrafico";
 
-const L = 720;
-const A = 280;
 const M = { topo: 12, dir: 16, base: 26, esq: 52 };
 
 interface Props {
@@ -16,6 +15,7 @@ interface Props {
 }
 
 export function LineChart({ titulo, dados, formatar = (v) => v.toLocaleString("pt-BR") }: Props) {
+  const { ref, L, A, rotulosVisiveis } = useDimensoesGrafico();
   const [ativo, setAtivo] = useState<number | null>(null);
   const marcas = marcasEixo(Math.max(0, ...dados.map((d) => d.valor)));
   const topo = marcas[marcas.length - 1]!;
@@ -24,7 +24,7 @@ export function LineChart({ titulo, dados, formatar = (v) => v.toLocaleString("p
   const passoX = larguraPlot / Math.max(1, dados.length - 1);
   const x = (i: number) => M.esq + (dados.length > 1 ? passoX * i : larguraPlot / 2);
   const y = (v: number) => M.topo + alturaPlot - (v / topo) * alturaPlot;
-  const salto = passoRotulos(dados.length);
+  const salto = passoRotulos(dados.length, rotulosVisiveis);
   const pontos = dados.map((d, i) => `${x(i)},${y(d.valor)}`).join(" ");
 
   /** A linha é fina demais para mirar: o ponteiro encaixa no X mais próximo. */
@@ -42,7 +42,7 @@ export function LineChart({ titulo, dados, formatar = (v) => v.toLocaleString("p
   }
 
   return (
-    <div className="chart">
+    <div className="chart" ref={ref}>
       <svg
         viewBox={`0 0 ${L} ${A}`}
         role="img"
