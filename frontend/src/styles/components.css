@@ -10,7 +10,7 @@
   border-radius: var(--tasty-radius-md);
   font-family: var(--tasty-font-title);
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.2;
   white-space: nowrap;
   transition: filter 0.15s ease, transform 0.05s ease;
@@ -31,8 +31,9 @@
   height: 20px;
 }
 .btn--primario {
-  background: var(--tasty-bg-success);
-  color: var(--tasty-text-on-color);
+  background: var(--tasty-bg-brand);
+  border-color: transparent;
+  color: var(--tasty-text-on-brand);
 }
 .btn--secundario {
   background: var(--tasty-bg-page);
@@ -40,10 +41,12 @@
 }
 .btn--marca {
   background: var(--tasty-bg-brand-strong);
+  border-color: transparent;
   color: var(--tasty-text-on-color);
 }
 .btn--perigo {
   background: var(--tasty-bg-danger);
+  border-color: transparent;
   color: var(--tasty-text-on-color);
 }
 .btn--fantasma {
@@ -117,7 +120,8 @@
 /* ---------- Card ---------- */
 .card {
   background: var(--tasty-bg-surface);
-  border: 1px solid var(--tasty-border-default);
+  border: 1px solid var(--tasty-border-subtle);
+  box-shadow: var(--tasty-shadow-sm);
   border-radius: var(--tasty-radius-lg);
   padding: 20px 24px;
   min-width: 0;
@@ -140,14 +144,16 @@
 .card__title {
   font-family: var(--tasty-font-title);
   font-size: 16px;
+  font-weight: 600;
 }
 .card__subtitle {
   font-size: 13px;
   color: var(--tasty-text-secondary);
 }
 .section-label {
-  font-family: var(--tasty-font-body);
-  font-size: 16px;
+  font-family: var(--tasty-font-title);
+  font-weight: 600;
+  font-size: 15px;
   margin-bottom: 12px;
 }
 
@@ -159,12 +165,13 @@
 }
 .kpi__label {
   font-family: var(--tasty-font-title);
-  font-size: 15px;
+  font-size: 14px;
+  color: var(--tasty-text-secondary);
 }
 .kpi__value {
   font-family: var(--tasty-font-title);
   font-weight: 600;
-  font-size: 30px;
+  font-size: 28px;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
@@ -194,7 +201,9 @@
   min-width: 0;
 }
 .field__label {
-  font-size: 16px;
+  font-family: var(--tasty-font-title);
+  font-weight: 500;
+  font-size: 14px;
 }
 .field__hint {
   font-size: 13px;
@@ -206,9 +215,9 @@
   padding: 9px 12px;
   background: var(--tasty-bg-input);
   border: 1px solid var(--tasty-border-default);
-  border-radius: var(--tasty-radius-lg);
+  border-radius: var(--tasty-radius-md);
   font-family: var(--tasty-font-body);
-  font-size: 16px;
+  font-size: 15px;
 }
 textarea.field__control {
   min-height: 96px;
@@ -251,7 +260,7 @@ select.field__control {
   height: 40px;
   background: var(--tasty-bg-input);
   border: 1px solid var(--tasty-border-default);
-  border-radius: var(--tasty-radius-lg);
+  border-radius: var(--tasty-radius-md);
 }
 .search svg {
   width: 18px;
@@ -282,12 +291,12 @@ select.field__control {
   background: var(--tasty-bg-page);
   color: var(--tasty-text-secondary);
   font-family: var(--tasty-font-title);
-  font-size: 15px;
+  font-size: 14px;
 }
 .pill[aria-pressed="true"],
 .pill[aria-selected="true"] {
   background: var(--tasty-bg-brand);
-  border-color: var(--tasty-border-default);
+  border-color: transparent;
   color: #000;
 }
 .pill__count {
@@ -305,15 +314,16 @@ select.field__control {
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 15px;
+  font-size: 14px;
 }
 .table th {
   text-align: left;
   font-family: var(--tasty-font-title);
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
+  color: var(--tasty-text-secondary);
   padding: 12px 16px;
-  border-bottom: 1px solid var(--tasty-border-default);
+  border-bottom: 1px solid var(--tasty-border-subtle);
   white-space: nowrap;
 }
 .table td {
@@ -345,7 +355,7 @@ select.field__control {
   flex: none;
   border: 1px solid var(--tasty-border-default);
   border-radius: 21px;
-  background: var(--tasty-bg-surface);
+  background: var(--tasty-bg-surface-alt);
   transition: background 0.2s ease;
 }
 .toggle::after {
@@ -373,7 +383,7 @@ select.field__control {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid var(--tasty-border-default);
+  border: 1px solid var(--tasty-border-subtle);
   background: var(--tasty-bg-brand-subtle);
   font-family: var(--tasty-font-title);
   font-weight: 500;
@@ -398,13 +408,17 @@ select.field__control {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 .page-header__title {
-  font-size: 20px;
+  font-family: var(--tasty-font-group);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.2;
 }
 .page-header__subtitle {
-  margin-top: 10px;
+  margin-top: 4px;
+  color: var(--tasty-text-secondary);
   max-width: 640px;
 }
 
@@ -437,7 +451,7 @@ select.field__control {
   align-items: flex-start;
   padding: 14px 16px;
   border-radius: var(--tasty-radius-lg);
-  border: 1px solid var(--tasty-border-default);
+  border: 1px solid transparent;
   background: var(--tasty-bg-brand-subtle);
 }
 .notice svg {
@@ -470,7 +484,7 @@ select.field__control {
   bottom: 0;
   width: min(460px, 100%);
   background: var(--tasty-bg-page);
-  border-left: 1px solid var(--tasty-border-default);
+  border-left: 1px solid var(--tasty-border-subtle);
   z-index: 41;
   display: flex;
   flex-direction: column;
@@ -537,7 +551,7 @@ select.field__control {
 /* ---------- Divisor ---------- */
 .divider {
   height: 1px;
-  background: var(--tasty-border-default);
+  background: var(--tasty-border-subtle);
   border: 0;
   margin: 4px 0;
 }

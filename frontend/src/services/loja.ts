@@ -1,7 +1,8 @@
 import { api, mockResponse } from "@/lib/api";
 import { USE_MOCKS } from "@/lib/config";
-import type { DadosLoja, PreferenciasAcessibilidade, Restaurante, SessaoAtiva, UsuarioEquipe } from "@/types";
+import type { Coordenada, DadosLoja, PreferenciasAcessibilidade, Restaurante, SessaoAtiva, UsuarioEquipe } from "@/types";
 import { acessibilidadeMock, dadosLojaMock, equipeMock, restauranteMock, sessoesMock } from "@/mocks/loja";
+import { localizarEndereco } from "@/mocks/rotas";
 
 let restaurante = structuredClone(restauranteMock);
 let dados = structuredClone(dadosLojaMock);
@@ -15,6 +16,15 @@ export async function obterRestaurante(): Promise<Restaurante> {
   // O BFF ainda só devolve nome, imagem, endereço e descrição; o resto usa valores neutros.
   const r = await api.get<Partial<Restaurante> & Pick<Restaurante, "nomeEstabelecimento">>("/v1/restaurante/dashboard");
   return { endereco: "", descricao: "", notaMedia: 0, totalAvaliacoes: 0, tempoRetiradaMin: 0, tempoEntregaMin: 0, plano: "basico", ...r };
+}
+
+/**
+ * Ponto do endereço cadastrado no mapa, ou `null` se não for possível localizá-lo.
+ * TODO backend: GET /v1/restaurante/dashboard precisa devolver `localizacao { lat, lng }`.
+ */
+export async function obterLocalizacaoLoja(): Promise<Coordenada | null> {
+  if (USE_MOCKS) return localizarEndereco(restaurante.endereco.replace(/\s*—\s*/g, ", "));
+  return (await obterRestaurante()).localizacao ?? null;
 }
 
 /** PUT /v1/restaurante (multipart: descricao, logo) — já existe no BFF. */
@@ -48,6 +58,7 @@ export async function obterDadosLoja(): Promise<DadosLoja> {
 export async function salvarDadosLoja(novo: DadosLoja) {
   if (USE_MOCKS) {
     dados = structuredClone(novo);
+    restaurante = { ...restaurante, endereco: `${novo.rua}, ${novo.numero} — ${novo.cidade}, ${novo.estado}` };
     return mockResponse(dados);
   }
   return api.put<DadosLoja>("/v1/restaurante/dados", novo as unknown as Record<string, unknown>);

@@ -12,12 +12,13 @@ import { Field } from "@/components/ui/Field";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Toast } from "@/components/ui/Toast";
 import { Toggle } from "@/components/ui/Toggle";
-import { mascaraCpf, mascaraTelefone, tempoDecorrido } from "@/lib/format";
+import { USE_MOCKS } from "@/lib/config";
+import { mascaraCpf, mascaraTelefone, previsaoDeChegada, tempoDecorrido } from "@/lib/format";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
 import { usePolling } from "@/lib/usePolling";
 import {
-  alterarDisponibilidade, cadastrarEntregador, listarEntregadores, listarPedidos, obterPosicoes, posicaoLoja, removerEntregador,
+  alterarDisponibilidade, cadastrarEntregador, listarEntregadores, listarPedidos, obterPosicaoLoja, obterPosicoes, removerEntregador,
 } from "@/services/operacao";
 import type { Entregador, StatusEntregador, TipoChavePix, Veiculo } from "@/types";
 
@@ -91,8 +92,10 @@ function FormCadastro({ aberto, ocupado, onFechar, onSalvar }: { aberto: boolean
 
 export function EntregadoresView() {
   const { data, setData, error, reload } = useAsync(async () => {
+    // Sem a localização, o mapa ainda mostra a frota: não derruba a tela.
+    const loja = await obterPosicaoLoja().catch(() => null);
     const [entregadores, pedidos] = await Promise.all([listarEntregadores(), listarPedidos()]);
-    return { entregadores, pedidos };
+    return { entregadores, pedidos, loja };
   });
   const { executar, ocupado, aviso } = useAcao();
   const [selecionadoId, setSelecionadoId] = useState<string | null>(null);
@@ -105,11 +108,15 @@ export function EntregadoresView() {
     const posicoes = await obterPosicoes();
     if (inicio !== versao.current) return;
     const porId = new Map(posicoes.map((p) => [p.id, p]));
-    setData((d) => (d ? { ...d, entregadores: d.entregadores.map((e) => ({ ...e, ...porId.get(e.id) })) } : d));
+    setData((d) => (d ? { ...d, entregadores: d.entregadores.map((e) => {
+      const lida = porId.get(e.id);
+      // Campos ausentes na leitura significam fim da rota, não "manter a anterior".
+      return lida ? { ...e, destino: undefined, rota: undefined, chegadaEm: undefined, ...lida } : e;
+    }) } : d));
   }, INTERVALO_POSICOES_MS);
 
   if (!data) return <LoadState titulo="Entregadores" erro={error} onTentarNovamente={reload} />;
-  const { entregadores, pedidos } = data;
+  const { entregadores, pedidos, loja } = data;
 
   const atualizarLista = (lista: Entregador[]) => {
     versao.current += 1;
@@ -145,11 +152,13 @@ export function EntregadoresView() {
 
       <div className="grid grid--sidebar">
         <Card titulo="Área de entrega" subtitulo="Posições atualizadas a cada 2 segundos">
-          <MapaEntregadores entregadores={entregadores} loja={posicaoLoja} selecionadoId={selecionadoId} onSelecionar={setSelecionadoId} />
+          {!loja && <p className="t-small t-muted">Não foi possível localizar a loja no mapa. Confira o endereço cadastrado em Dados da loja.</p>}
+          <MapaEntregadores entregadores={entregadores} loja={loja} selecionadoId={selecionadoId} onSelecionar={setSelecionadoId} />
           <div className="mapa-legenda">
             <span><i className="mapa-legenda__loja" />Loja</span>
             <span><i className="mapa-legenda__em_entrega" />Em entrega</span>
             <span><i className="mapa-legenda__disponivel" />Disponível</span>
+            <span><i className="mapa-legenda__transito" />{USE_MOCKS ? "Trânsito (simulado)" : "Trânsito"}</span>
           </div>
         </Card>
         <Card titulo="Frota agora">
@@ -169,6 +178,12 @@ export function EntregadoresView() {
                     <span className="t-small t-muted">
                       {pedido ? `Pedido #${pedido.numero}` : "Sem pedido em curso"} · {e.entregasHoje} entregas hoje · ★ {e.avaliacao.toLocaleString("pt-BR")}
                     </span>
+                    {e.status === "em_entrega" && e.chegadaEm && (
+                      <span className="t-small">
+                        {previsaoDeChegada(e.chegadaEm)}
+                        {e.rota?.some((p) => p.transito) && " · trânsito na rota"}
+                      </span>
+                    )}
                     <span className="t-small t-muted">Atualizado {tempoDecorrido(e.atualizadoEm)}</span>
                   </span>
                 </button>

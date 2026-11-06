@@ -18,7 +18,7 @@
   max-width: 360px;
   padding: 10px 16px;
   border-radius: var(--tasty-radius-lg);
-  border: 1px solid var(--tasty-border-default);
+  border: 1px solid var(--tasty-border-subtle);
   font-family: var(--tasty-font-title);
   font-size: 14px;
   box-shadow: var(--tasty-shadow-card);
@@ -188,8 +188,8 @@
   gap: 10px;
   min-height: 220px;
   padding: 12px;
-  background: var(--tasty-bg-surface);
-  border: 1px solid var(--tasty-border-default);
+  background: var(--tasty-bg-surface-alt);
+  border: 1px solid transparent;
   border-radius: var(--tasty-radius-lg);
 }
 .quadro__titulo {
@@ -197,7 +197,8 @@
   align-items: center;
   justify-content: space-between;
   font-family: var(--tasty-font-title);
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 600;
 }
 .quadro__vazio {
   padding: 24px 8px;
@@ -214,10 +215,11 @@
   text-align: left;
   background: var(--tasty-bg-page);
   border: 1px solid var(--tasty-border-subtle);
+  box-shadow: var(--tasty-shadow-sm);
   border-radius: var(--tasty-radius-md);
 }
 .pedido-card:hover {
-  border-color: var(--tasty-border-default);
+  border-color: var(--tasty-border-brand);
 }
 .pedido-card__topo {
   display: flex;
@@ -272,9 +274,24 @@
 }
 .mapa__rota {
   fill: none;
-  stroke: var(--tasty-gray-800);
+  stroke: var(--tasty-text-primary);
   stroke-width: 2;
   stroke-dasharray: 3 6;
+}
+/* Sólida e mais grossa: o trânsito não depende só da cor. */
+.mapa__rota--transito {
+  stroke: var(--tasty-bg-danger);
+  stroke-width: 5;
+  stroke-dasharray: none;
+}
+.leaflet-tooltip.mapa__previsao {
+  padding: 2px 6px;
+  border: 1px solid var(--tasty-border-default);
+  border-radius: var(--tasty-radius-sm);
+  background: var(--tasty-bg-page);
+  color: var(--tasty-text-primary);
+  font-size: 12px;
+  box-shadow: none;
 }
 .mapa__marcador {
   display: grid !important;
@@ -337,6 +354,13 @@
 .mapa-legenda__disponivel {
   background: var(--tasty-bg-success);
 }
+.mapa-legenda i.mapa-legenda__transito {
+  width: 18px;
+  height: 5px;
+  border: 0;
+  border-radius: var(--tasty-radius-sm);
+  background: var(--tasty-bg-danger);
+}
 .entregador-item {
   display: flex;
   align-items: flex-start;
@@ -348,11 +372,11 @@
   border: 1px solid transparent;
 }
 .entregador-item:hover {
-  background: var(--tasty-bg-page);
+  background: var(--tasty-bg-canvas);
 }
 .entregador-item[aria-pressed="true"] {
-  background: var(--tasty-bg-page);
-  border-color: var(--tasty-border-default);
+  background: var(--tasty-bg-brand-subtle);
+  border-color: var(--tasty-border-brand);
 }
 
 /* ---------- Preços ---------- */
@@ -429,7 +453,7 @@
 .avaliacao__resposta {
   padding: 10px 12px;
   border-left: 3px solid var(--tasty-border-brand);
-  background: var(--tasty-bg-page);
+  background: var(--tasty-bg-canvas);
   border-radius: var(--tasty-radius-sm);
 }
 
@@ -476,7 +500,7 @@
   width: 104px;
   height: 104px;
   border-radius: var(--tasty-radius-md);
-  border: 1px solid var(--tasty-border-default);
+  border: 1px solid var(--tasty-border-subtle);
 }
 .post__corpo {
   flex: 1;
@@ -505,7 +529,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid var(--tasty-border-default);
+  border: 1px solid var(--tasty-border-subtle);
 }
 .amostra[aria-pressed="true"] {
   outline: 2px solid var(--tasty-text-primary);
@@ -530,7 +554,7 @@
   width: 96px;
   height: 96px;
   border-radius: var(--tasty-radius-md);
-  border: 1px solid var(--tasty-border-default);
+  border: 1px solid var(--tasty-border-subtle);
   background: var(--tasty-bg-surface-alt);
   color: var(--tasty-text-secondary);
   overflow: hidden;

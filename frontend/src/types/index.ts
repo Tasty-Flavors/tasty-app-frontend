@@ -8,6 +8,8 @@ export interface Restaurante {
   tempoRetiradaMin: number;
   tempoEntregaMin: number;
   plano: PlanoId;
+  /** Ponto do endereço no mapa, resolvido pelo backend. */
+  localizacao?: Coordenada;
 }
 
 export interface DadosLoja {
@@ -64,6 +66,11 @@ export interface Coordenada {
   lng: number;
 }
 
+/** `transito` vale para o trecho que começa neste ponto e vai até o seguinte. */
+export interface PontoRota extends Coordenada {
+  transito?: boolean;
+}
+
 export interface Entregador {
   id: string;
   nome: string;
@@ -76,6 +83,10 @@ export interface Entregador {
   status: StatusEntregador;
   posicao: Coordenada;
   destino?: Coordenada;
+  /** Caminho pelas ruas da posição atual até o destino, quando em entrega. */
+  rota?: PontoRota[];
+  /** Previsão de chegada ao destino (ISO 8601), já considerando o trânsito. */
+  chegadaEm?: string;
   pedidoId?: string;
   entregasHoje: number;
   avaliacao: number;

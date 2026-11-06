@@ -3,8 +3,8 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef } from "react";
-import { iniciais } from "@/lib/format";
-import type { Coordenada, Entregador } from "@/types";
+import { iniciais, tempoAteChegada } from "@/lib/format";
+import type { Coordenada, Entregador, PontoRota } from "@/types";
 
 /*
  * Mapas do OpenStreetMap: gratuitos e sem chave, mas o servidor público tem política
@@ -15,12 +15,32 @@ const URL_MAPA = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const ATRIBUICAO = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>';
 const RAIO_ENTREGA_M = 3000;
 const TAMANHO_MARCADOR = 36;
+const CENTRO_BRASIL: L.LatLngTuple = [-14.2, -51.9];
 
 interface Camadas {
   marcador: L.Marker;
   chaveIcone: string;
   rota: L.Polyline;
+  transito: L.Polyline;
   destino: L.CircleMarker;
+  previsao: HTMLElement;
+}
+
+/** Separa a rota em pedaços contínuos: cada um vira uma linha com ou sem trânsito. */
+function separarTrechos(rota: PontoRota[]) {
+  const livres: L.LatLngLiteral[][] = [];
+  const comTransito: L.LatLngLiteral[][] = [];
+  let atual: L.LatLngLiteral[] = [];
+  rota.slice(0, -1).forEach((ponto, i) => {
+    const seguinte = rota[i + 1]!;
+    if (atual.length === 0) atual.push(ponto);
+    atual.push(seguinte);
+    if (Boolean(seguinte.transito) !== Boolean(ponto.transito) || i === rota.length - 2) {
+      (ponto.transito ? comTransito : livres).push(atual);
+      atual = [];
+    }
+  });
+  return { livres, comTransito };
 }
 
 function iconeEntregador(e: Entregador, selecionado: boolean) {
@@ -36,7 +56,7 @@ function iconeEntregador(e: Entregador, selecionado: boolean) {
 
 interface Props {
   entregadores: Entregador[];
-  loja: Coordenada;
+  loja: Coordenada | null;
   selecionadoId: string | null;
   onSelecionar: (id: string) => void;
 }
@@ -49,21 +69,29 @@ export function MapaEntregadores({ entregadores, loja, selecionadoId, onSelecion
   useEffect(() => {
     selecionar.current = onSelecionar;
   });
+  const posicoes = useRef(entregadores);
+  posicoes.current = entregadores;
 
   useEffect(() => {
     if (!elemento.current) return;
     const instancia = L.map(elemento.current, { scrollWheelZoom: false });
     L.tileLayer(URL_MAPA, { attribution: ATRIBUICAO, maxZoom: 19 }).addTo(instancia);
-    const area = L.circle(loja, { radius: RAIO_ENTREGA_M, className: "mapa__area", interactive: false }).addTo(instancia);
-    // Enquadra a área de entrega em qualquer tamanho de tela.
-    instancia.setView(loja, 13);
-    instancia.fitBounds(area.getBounds(), { animate: false });
-    L.marker(loja, {
-      icon: L.divIcon({ html: "Loja", className: "mapa__marcador mapa__marcador--loja", iconSize: [44, 28] }),
-      title: "Loja",
-      alt: "Loja",
-      zIndexOffset: -100,
-    }).addTo(instancia);
+    if (loja) {
+      const area = L.circle(loja, { radius: RAIO_ENTREGA_M, className: "mapa__area", interactive: false }).addTo(instancia);
+      // Enquadra a área de entrega em qualquer tamanho de tela.
+      instancia.setView(loja, 13);
+      instancia.fitBounds(area.getBounds(), { animate: false });
+      L.marker(loja, {
+        icon: L.divIcon({ html: "Loja", className: "mapa__marcador mapa__marcador--loja", iconSize: [44, 28] }),
+        title: "Loja",
+        alt: "Loja",
+        zIndexOffset: -100,
+      }).addTo(instancia);
+    } else {
+      const frota = posicoes.current.filter((e) => e.status !== "offline").map((e) => L.latLng(e.posicao));
+      if (frota.length) instancia.fitBounds(L.latLngBounds(frota), { animate: false, maxZoom: 15 });
+      else instancia.setView(CENTRO_BRASIL, 4);
+    }
     // Sem transição enquanto o mapa é arrastado ou redimensionado: o marcador acompanha na hora.
     const alternar = (ativo: boolean) => () => instancia.getContainer().classList.toggle("mapa--arrastando", ativo);
     instancia.on("movestart zoomstart", alternar(true));
@@ -87,6 +115,7 @@ export function MapaEntregadores({ entregadores, loja, selecionadoId, onSelecion
       if (ids.has(id)) return;
       c.marcador.remove();
       c.rota.remove();
+      c.transito.remove();
       c.destino.remove();
       camadas.current.delete(id);
     });
@@ -98,11 +127,18 @@ export function MapaEntregadores({ entregadores, loja, selecionadoId, onSelecion
       if (!c) {
         const marcador = L.marker(e.posicao, { icon: iconeEntregador(e, selecionado), title: e.nome, alt: e.nome }).addTo(instancia);
         marcador.on("click", () => selecionar.current(e.id));
+        const previsao = document.createElement("span");
         c = {
           marcador,
           chaveIcone,
           rota: L.polyline([], { className: "mapa__rota", interactive: false }).addTo(instancia),
-          destino: L.circleMarker(e.posicao, { radius: 5, className: "mapa__rota", interactive: false }),
+          transito: L.polyline([], { className: "mapa__rota mapa__rota--transito", interactive: false }).addTo(instancia),
+          destino: L.circleMarker(e.posicao, { radius: 5, className: "mapa__rota", interactive: false }).bindTooltip(previsao, {
+            permanent: true,
+            direction: "top",
+            className: "mapa__previsao",
+          }),
+          previsao,
         };
         camadas.current.set(e.id, c);
       } else {
@@ -112,19 +148,20 @@ export function MapaEntregadores({ entregadores, loja, selecionadoId, onSelecion
           c.chaveIcone = chaveIcone;
         }
       }
+      // Só desenha o caminho recebido: uma reta até o destino cortaria as quadras.
+      const { livres, comTransito } = separarTrechos(e.status === "em_entrega" && e.rota ? e.rota : []);
+      c.rota.setLatLngs(livres);
+      c.transito.setLatLngs(comTransito);
       if (e.status === "em_entrega" && e.destino) {
-        c.rota.setLatLngs([e.posicao, e.destino]);
+        c.previsao.textContent = e.chegadaEm ? `${iniciais(e.nome)}: ${tempoAteChegada(e.chegadaEm)}` : iniciais(e.nome);
         c.destino.setLatLng(e.destino).addTo(instancia);
       } else {
-        c.rota.setLatLngs([]);
         c.destino.remove();
       }
     });
   }, [entregadores, selecionadoId]);
 
   // Só reage à troca de seleção: não pode recentrar o mapa a cada leitura de posição.
-  const posicoes = useRef(entregadores);
-  posicoes.current = entregadores;
   useEffect(() => {
     const alvo = posicoes.current.find((e) => e.id === selecionadoId && e.status !== "offline");
     if (alvo) mapa.current?.panTo(alvo.posicao);

@@ -9,7 +9,7 @@ import { diasAtras, minutosAtras } from "./util";
 
 export const restauranteMock: Restaurante = {
   nomeEstabelecimento: "Da Esquina",
-  endereco: "Avenida Fulano de Tal, 1212 — Porto Alegre, RS",
+  endereco: "Avenida João Pessoa, 1000 — Porto Alegre, RS",
   descricao: "Lanches, pratos feitos e açaí desde 2019. Entrega rápida no Centro Histórico e Cidade Baixa.",
   imagem: undefined,
   notaMedia: 4.5,
@@ -20,12 +20,12 @@ export const restauranteMock: Restaurante = {
 };
 
 export const dadosLojaMock: DadosLoja = {
-  rua: "Avenida Fulano de Tal",
-  numero: "1212",
+  rua: "Avenida João Pessoa",
+  numero: "1000",
   complemento: "Em frente ao bar do Zé",
   cidade: "Porto Alegre",
   estado: "Rio Grande do Sul",
-  cep: "90010-000",
+  cep: "90040-000",
   razaoSocial: "Fulano de Tal Alimentos LTDA",
   cnpj: "12.345.678/0001-90",
   chavePix: "financeiro@daesquina.com.br",

@@ -18,6 +18,19 @@ export function formatarHora(iso: string) {
   return new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
+const minutosAte = (iso: string, agora: number) => Math.ceil((new Date(iso).getTime() - agora) / 60000);
+
+/** "4 min"; passou do horário previsto, "chegando". */
+export function tempoAteChegada(iso: string, agora = Date.now()) {
+  const min = minutosAte(iso, agora);
+  return min > 0 ? `${min} min` : "chegando";
+}
+
+/** "Chega em 4 min (14:32)"; passou do horário previsto, "Chegando". */
+export function previsaoDeChegada(iso: string, agora = Date.now()) {
+  return minutosAte(iso, agora) > 0 ? `Chega em ${tempoAteChegada(iso, agora)} (${formatarHora(iso)})` : "Chegando";
+}
+
 /** "há 5 min", "há 2 h" — usado nos cards de pedidos. */
 export function tempoDecorrido(iso: string, agora = Date.now()) {
   const min = Math.max(0, Math.round((agora - new Date(iso).getTime()) / 60000));

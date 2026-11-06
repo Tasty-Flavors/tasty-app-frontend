@@ -12,11 +12,11 @@ body {
 }
 
 body {
-  background: var(--tasty-bg-page);
+  background: var(--tasty-bg-canvas);
   color: var(--tasty-text-primary);
   font-family: var(--tasty-font-body);
-  font-size: 16px;
-  line-height: 1.35;
+  font-size: 15px;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
 
