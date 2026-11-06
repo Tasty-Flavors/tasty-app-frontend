@@ -3,9 +3,7 @@ import type { NomeIcone } from "@/components/ui/Icon";
 export interface ItemMenu {
   href: string;
   rotulo: string;
-  /** PNG de public/assets/icons, ou ícone SVG para os itens novos de Operação. */
-  png?: string;
-  svg?: NomeIcone;
+  icone: NomeIcone;
 }
 
 export interface GrupoMenu {
@@ -13,45 +11,43 @@ export interface GrupoMenu {
   itens: ItemMenu[];
 }
 
-const png = (nome: string) => `/assets/icons/${nome}.png`;
-
 export const MENU: GrupoMenu[] = [
-  { itens: [{ href: "/inicio", rotulo: "Início", png: png("pagina-inicial") }] },
+  { itens: [{ href: "/inicio", rotulo: "Início", icone: "inicio" }] },
   {
     titulo: "Desempenho e vendas",
     itens: [
-      { href: "/desempenho", rotulo: "Desempenho", png: png("desempenho") },
-      { href: "/pedidos", rotulo: "Pedidos", png: png("pedido") },
-      { href: "/financeiro", rotulo: "Financeiro", png: png("sifrao") },
-      { href: "/avaliacoes", rotulo: "Avaliações", png: png("estrela") },
-      { href: "/premium", rotulo: "Premium", png: png("premium") },
+      { href: "/desempenho", rotulo: "Desempenho", icone: "grafico" },
+      { href: "/pedidos", rotulo: "Pedidos", icone: "pedidos" },
+      { href: "/financeiro", rotulo: "Financeiro", icone: "cifrao" },
+      { href: "/avaliacoes", rotulo: "Avaliações", icone: "estrela" },
+      { href: "/premium", rotulo: "Premium", icone: "coroa" },
     ],
   },
   {
     titulo: "Operação",
     itens: [
-      { href: "/entregadores", rotulo: "Entregadores", svg: "moto" },
-      { href: "/estoque", rotulo: "Estoque", svg: "caixa" },
-      { href: "/precos", rotulo: "Preços", svg: "etiqueta" },
+      { href: "/entregadores", rotulo: "Entregadores", icone: "moto" },
+      { href: "/estoque", rotulo: "Estoque", icone: "caixa" },
+      { href: "/precos", rotulo: "Preços", icone: "etiqueta" },
     ],
   },
   {
     titulo: "Marketing",
     itens: [
-      { href: "/clientes", rotulo: "Seus Clientes", png: png("pessoas") },
-      { href: "/promocoes", rotulo: "Promoções", png: png("promocoes") },
-      { href: "/anuncios", rotulo: "Anúncios", png: png("megafone") },
-      { href: "/feed", rotulo: "Feed", png: png("feed") },
-      { href: "/parcerias", rotulo: "Parcerias", png: png("parceria") },
+      { href: "/clientes", rotulo: "Seus Clientes", icone: "pessoas" },
+      { href: "/promocoes", rotulo: "Promoções", icone: "porcentagem" },
+      { href: "/anuncios", rotulo: "Anúncios", icone: "megafone" },
+      { href: "/feed", rotulo: "Feed", icone: "feed" },
+      { href: "/parcerias", rotulo: "Parcerias", icone: "parceria" },
     ],
   },
   {
     titulo: "Configurações da Loja",
     itens: [
-      { href: "/cardapios", rotulo: "Cardápios", png: png("cardapio") },
-      { href: "/acessibilidade", rotulo: "Acessibilidade", png: png("acessibilidade") },
-      { href: "/privacidade", rotulo: "Privacidade e Segurança", png: png("privacidade") },
-      { href: "/dados-da-loja", rotulo: "Dados da Loja", png: png("pessoa") },
+      { href: "/cardapios", rotulo: "Cardápios", icone: "cardapio" },
+      { href: "/acessibilidade", rotulo: "Acessibilidade", icone: "acessibilidade" },
+      { href: "/privacidade", rotulo: "Privacidade e Segurança", icone: "escudo" },
+      { href: "/dados-da-loja", rotulo: "Dados da Loja", icone: "loja" },
     ],
   },
 ];

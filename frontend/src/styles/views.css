@@ -239,76 +239,75 @@
 
 /* ---------- Entregadores ---------- */
 .mapa {
-  display: block;
+  /* Isola os z-index altos do Leaflet, que passariam por cima dos painéis laterais. */
+  isolation: isolate;
   width: 100%;
-  height: auto;
+  height: 440px;
   border-radius: var(--tasty-radius-md);
   border: 1px solid var(--tasty-border-subtle);
   background: var(--tasty-bg-canvas);
+  font-family: var(--tasty-font-title);
 }
-.mapa__quadra {
-  fill: var(--tasty-bg-surface);
+.mapa--carregando {
+  display: grid;
+  place-items: center;
+  color: var(--tasty-text-secondary);
 }
-.mapa__parque {
-  fill: var(--tasty-bg-success-subtle);
+:root[data-theme="dark"] .mapa .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9);
 }
-.mapa__rio {
-  fill: var(--tasty-bg-info-subtle);
+:root[data-theme="dark"] .mapa .leaflet-bar a,
+:root[data-theme="dark"] .mapa .leaflet-control-attribution {
+  background: var(--tasty-bg-surface);
+  color: var(--tasty-text-primary);
+}
+:root[data-theme="dark"] .mapa .leaflet-control-attribution a {
+  color: var(--tasty-text-link);
 }
 .mapa__area {
   fill: none;
   stroke: var(--tasty-chart-primary);
-  stroke-width: 1.5;
+  stroke-width: 2;
   stroke-dasharray: 6 6;
 }
-.mapa__texto {
-  font-family: var(--tasty-font-title);
-  font-size: 18px;
-  fill: var(--tasty-text-secondary);
-}
-.mapa__loja {
-  fill: var(--tasty-bg-brand);
-  stroke: var(--tasty-border-default);
-  stroke-width: 1.5;
-}
-.mapa__icone-loja {
-  color: var(--tasty-gray-1000);
-}
 .mapa__rota {
-  stroke: var(--tasty-text-secondary);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 5;
+  fill: none;
+  stroke: var(--tasty-gray-800);
+  stroke-width: 2;
+  stroke-dasharray: 3 6;
 }
-.mapa__destino {
-  fill: var(--tasty-bg-page);
-  stroke: var(--tasty-text-secondary);
-  stroke-width: 1.5;
-}
-.mapa__entregador {
-  cursor: pointer;
+.mapa__marcador {
+  display: grid !important;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--tasty-gray-0);
+  box-shadow: var(--tasty-shadow-card);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tasty-gray-0);
+  /* Desliza entre as leituras de posição, sem saltos. */
   transition: transform 2s linear;
 }
-.mapa__ponto {
-  stroke: var(--tasty-bg-page);
-  stroke-width: 3;
+.leaflet-zoom-anim .mapa__marcador,
+.mapa--arrastando .mapa__marcador {
+  transition: none;
 }
-.mapa__ponto--em_entrega {
-  fill: var(--tasty-bg-brand-strong);
+.mapa__marcador--em_entrega {
+  background: var(--tasty-bg-brand-strong);
 }
-.mapa__ponto--disponivel {
-  fill: var(--tasty-bg-success);
+.mapa__marcador--disponivel {
+  background: var(--tasty-bg-success);
 }
-.mapa__iniciais {
-  font-family: var(--tasty-font-title);
-  font-size: 16px;
-  font-weight: 600;
-  fill: var(--tasty-text-on-color);
-  pointer-events: none;
+.mapa__marcador--selecionado {
+  outline: 3px solid var(--tasty-gray-1000);
+  outline-offset: 1px;
 }
-.mapa__selecao {
-  fill: none;
-  stroke: var(--tasty-text-primary);
-  stroke-width: 2;
+.mapa__marcador--loja {
+  border-radius: var(--tasty-radius-md);
+  border-color: var(--tasty-gray-1000);
+  background: var(--tasty-bg-brand);
+  color: var(--tasty-gray-1000);
+  transition: none;
 }
 .mapa-legenda {
   display: flex;
@@ -556,16 +555,8 @@
   gap: 8px;
 }
 @media (max-width: 620px) {
-  /* O mapa encolhe junto com a tela: os marcadores compensam para continuar legíveis. */
-  .mapa__ponto {
-    r: 32px;
-  }
-  .mapa__selecao {
-    r: 40px;
-  }
-  .mapa__iniciais {
-    font-size: 26px;
-    transform: translateY(4px);
+  .mapa {
+    height: 320px;
   }
   .produto,
   .post {

@@ -6,7 +6,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
-import { getToken, setToken } from "@/lib/auth";
+import { getStoredToken, setToken } from "@/lib/auth";
 import { AUTH_URL, USE_MOCKS } from "@/lib/config";
 
 const TOKEN_DEMONSTRACAO = "token-de-demonstracao";
@@ -40,7 +40,8 @@ export function LoginView() {
   const [aviso, setAviso] = useState<string | null>(null);
 
   useEffect(() => {
-    if (getToken()) router.replace("/inicio");
+    // Só o login salvo redireciona: com token fixo, o logout levaria de volta ao painel.
+    if (getStoredToken()) router.replace("/inicio");
   }, [router]);
 
   async function entrar(e: FormEvent) {
@@ -62,7 +63,7 @@ export function LoginView() {
     <main className="login">
       <div className="login__box">
         <div className="login__logo">
-          <Image src="/assets/png/tasty-logo.png" alt="Logo Tasty Flavors Delivery" width={144} height={95} priority />
+          <Image src="/assets/png/tasty-logo.png" alt="Logo Tasty Flavors Delivery" width={144} height={144} priority />
         </div>
         <h1 className="login__title">Bem-vindo de volta!</h1>
         <p className="t-muted t-center">Preencha as informações abaixo para acessar sua conta</p>

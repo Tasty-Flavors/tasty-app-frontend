@@ -1,6 +1,6 @@
 import { api, mockResponse } from "@/lib/api";
 import { USE_MOCKS } from "@/lib/config";
-import type { Entregador, ItemEstoque, MovimentoEstoque, Pedido, Produto, StatusPedido } from "@/types";
+import type { Coordenada, Entregador, ItemEstoque, MovimentoEstoque, Pedido, Produto, StatusPedido } from "@/types";
 import { entregadoresMock, estoqueMock, movimentosEstoqueMock, pedidosMock, posicaoLojaMock, produtosMock } from "@/mocks/operacao";
 
 /*
@@ -13,6 +13,11 @@ let entregadores = structuredClone(entregadoresMock);
 let estoque = structuredClone(estoqueMock);
 let movimentos = structuredClone(movimentosEstoqueMock);
 let produtos = structuredClone(produtosMock);
+
+/** Só no modo mock: um ponto em terra firme perto da loja, a leste do Guaíba. */
+function pontoSimulado(): Coordenada {
+  return { lat: posicaoLojaMock.lat + (Math.random() - 0.5) * 0.04, lng: posicaoLojaMock.lng + (Math.random() - 0.3) * 0.03 };
+}
 
 /* ---------- Pedidos ---------- */
 
@@ -56,7 +61,7 @@ export async function atualizarStatusPedido(id: string, status: StatusPedido, ex
     }
     if (extra?.entregadorId) {
       entregadores = entregadores.map((e) =>
-        e.id === extra.entregadorId ? { ...e, status: "em_entrega", pedidoId: id, destino: { x: 0.2 + Math.random() * 0.6, y: 0.15 + Math.random() * 0.7 } } : e,
+        e.id === extra.entregadorId ? { ...e, status: "em_entrega", pedidoId: id, destino: pontoSimulado() } : e,
       );
     }
     return mockResponse(pedidos.find((p) => p.id === id)!);
@@ -75,7 +80,7 @@ export async function listarEntregadores(): Promise<Entregador[]> {
 export async function cadastrarEntregador(novo: Omit<Entregador, "id" | "posicao" | "entregasHoje" | "avaliacao" | "atualizadoEm" | "status">) {
   if (USE_MOCKS) {
     const e: Entregador = {
-      ...novo, id: `e${Date.now()}`, status: "offline", posicao: { x: 0.5, y: 0.45 },
+      ...novo, id: `e${Date.now()}`, status: "offline", posicao: { ...posicaoLojaMock },
       entregasHoje: 0, avaliacao: 5, atualizadoEm: new Date().toISOString(),
     };
     entregadores = [...entregadores, e];
@@ -100,6 +105,9 @@ export async function removerEntregador(id: string) {
   return api.delete<boolean>(`/v1/restaurante/entregadores/${id}`);
 }
 
+/** Cerca de 28 m a cada leitura de 2 s, perto de 50 km/h. */
+const PASSO_SIMULADO_GRAUS = 0.00025;
+
 /**
  * Posições em tempo real. No backend real isto deve virar WebSocket/SSE
  * (ex.: /v1/restaurante/entregadores/stream). No modo mock, move cada
@@ -109,14 +117,13 @@ export async function obterPosicoes(): Promise<Pick<Entregador, "id" | "posicao"
   if (USE_MOCKS) {
     entregadores = entregadores.map((e) => {
       if (e.status !== "em_entrega" || !e.destino) return e;
-      const dx = e.destino.x - e.posicao.x;
-      const dy = e.destino.y - e.posicao.y;
-      const dist = Math.hypot(dx, dy);
-      const passo = 0.012;
+      const dLat = e.destino.lat - e.posicao.lat;
+      const dLng = e.destino.lng - e.posicao.lng;
+      const dist = Math.hypot(dLat, dLng);
       const atualizadoEm = new Date().toISOString();
       // Ao chegar, segue para outro ponto: mantém o mapa em movimento na demonstração.
-      if (dist < passo) return { ...e, posicao: { ...e.destino }, destino: { x: 0.12 + Math.random() * 0.76, y: 0.12 + Math.random() * 0.76 }, atualizadoEm };
-      return { ...e, posicao: { x: e.posicao.x + (dx / dist) * passo, y: e.posicao.y + (dy / dist) * passo }, atualizadoEm };
+      if (dist < PASSO_SIMULADO_GRAUS) return { ...e, posicao: { ...e.destino }, destino: pontoSimulado(), atualizadoEm };
+      return { ...e, posicao: { lat: e.posicao.lat + (dLat / dist) * PASSO_SIMULADO_GRAUS, lng: e.posicao.lng + (dLng / dist) * PASSO_SIMULADO_GRAUS }, atualizadoEm };
     });
     return mockResponse(entregadores.map(({ id, posicao, status, atualizadoEm }) => ({ id, posicao, status, atualizadoEm })), 50);
   }

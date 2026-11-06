@@ -5,12 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { logout } from "@/lib/auth";
-import { estaAtivo, MENU, type ItemMenu } from "./nav";
-
-function IconeItem({ item }: { item: ItemMenu }) {
-  if (item.svg) return <Icon nome={item.svg} className="sidebar__icon" />;
-  return <Image src={item.png!} alt="" width={24} height={24} className="sidebar__icon" loading="eager" unoptimized />;
-}
+import { estaAtivo, MENU } from "./nav";
 
 interface Props {
   aberto: boolean;
@@ -44,7 +39,7 @@ export function Sidebar({ aberto, nomeLoja, selos, onNavegar }: Props) {
                     title={item.rotulo}
                     onClick={onNavegar}
                   >
-                    <IconeItem item={item} />
+                    <Icon nome={item.icone} className="sidebar__icon" />
                     <span className="sidebar__label">{item.rotulo}</span>
                     {selo > 0 && <span className="sidebar__badge">{selo}</span>}
                   </Link>
@@ -54,7 +49,7 @@ export function Sidebar({ aberto, nomeLoja, selos, onNavegar }: Props) {
             {grupo.titulo === "Configurações da Loja" && (
               <li>
                 <button type="button" className="sidebar__item" aria-label="Logout" title="Logout" onClick={logout}>
-                  <Image src="/assets/icons/sair.png" alt="" width={24} height={24} className="sidebar__icon" loading="eager" unoptimized />
+                  <Icon nome="sair" className="sidebar__icon" />
                   <span className="sidebar__label">Logout</span>
                 </button>
               </li>

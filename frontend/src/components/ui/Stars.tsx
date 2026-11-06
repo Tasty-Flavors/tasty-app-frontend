@@ -12,7 +12,7 @@ export function Stars({ nota, pequeno }: { nota: number; pequeno?: boolean }) {
       ))}
       <span className="stars__cheias" style={{ width: `${preenchido}%` }}>
         {ESTRELAS.map((n) => (
-          <Icon key={n} nome="estrela" preenchido />
+          <Icon key={n} nome="estrela-cheia" />
         ))}
       </span>
     </span>

@@ -1,19 +1,18 @@
-const isLocal =
-  typeof window !== "undefined" &&
-  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+/*
+ * Valores de ambientes/<dev|hml|prod>.env, aplicados por scripts/ambiente.mjs.
+ * O Next embute NEXT_PUBLIC_* no build: trocar de ambiente exige reiniciar ou
+ * refazer o build. Não há valor padrão de URL de propósito, para um ambiente mal
+ * configurado nunca chamar outro por engano.
+ */
 
-/** BFF do painel (mesmos endereços do frontend legado). */
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (isLocal ? "http://localhost:8081/tasty-app-bff" : "https://tasty-app-bff.fly.dev/tasty-app-bff");
+/** BFF do painel. */
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 /** Serviço de autenticação. */
-export const AUTH_URL =
-  process.env.NEXT_PUBLIC_AUTH_URL ||
-  (isLocal ? "http://localhost:8085/tasty-auth-service" : "https://tasty-auth-service.fly.dev/tasty-auth-service");
+export const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL ?? "";
 
-/**
- * Quando verdadeiro, os serviços em src/services devolvem os dados de src/mocks
- * em vez de chamar o BFF. Padrão: ligado, até os endpoints existirem.
- */
+/** Token fixo do ambiente, usado quando não há login salvo no navegador. */
+export const ACCESS_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN || null;
+
+/** Quando verdadeiro, os serviços de src/services devolvem os dados de src/mocks. */
 export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS !== "false";

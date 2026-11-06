@@ -100,7 +100,7 @@ export function AvaliacoesView() {
           {notas.map((n) => (
             <div key={n} className="hbar hbar--notas">
               <span className="row row--compacta t-title">
-                {n} <Icon nome="estrela" preenchido tamanho={14} />
+                {n} <Icon nome="estrela-cheia" tamanho={14} />
               </span>
               <div className="progress" aria-hidden="true">
                 <div className="progress__bar" style={{ width: `${((distribuicao[n] ?? 0) / maximo) * 100}%` }} />

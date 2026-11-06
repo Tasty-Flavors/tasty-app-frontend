@@ -64,28 +64,28 @@ export const pedidosMock: Pedido[] = [
 export const entregadoresMock: Entregador[] = [
   {
     id: "e1", nome: "Rodolfo Rolfodo", cpf: "123.456.789-10", telefone: "(51) 99900-1010", veiculo: "Moto", placa: "IVI2213F",
-    chavePix: "ro@gmail.com", tipoChavePix: "Email", status: "em_entrega", posicao: { x: 0.42, y: 0.36 }, destino: { x: 0.24, y: 0.22 },
+    chavePix: "ro@gmail.com", tipoChavePix: "Email", status: "em_entrega", posicao: { lat: -30.0340, lng: -51.2230 }, destino: { lat: -30.0270, lng: -51.2320 },
     pedidoId: "p6", entregasHoje: 7, avaliacao: 4.9, atualizadoEm: minutosAtras(0),
   },
   {
     id: "e2", nome: "Patrícia Moura", cpf: "987.654.321-00", telefone: "(51) 99900-2020", veiculo: "Bike",
-    chavePix: "(51) 99900-2020", tipoChavePix: "Telefone", status: "disponivel", posicao: { x: 0.55, y: 0.52 },
+    chavePix: "(51) 99900-2020", tipoChavePix: "Telefone", status: "disponivel", posicao: { lat: -30.0420, lng: -51.2165 },
     entregasHoje: 4, avaliacao: 4.8, atualizadoEm: minutosAtras(1),
   },
   {
     id: "e3", nome: "Marcos Vieira", cpf: "321.654.987-11", telefone: "(51) 99900-3030", veiculo: "Moto", placa: "JAB4C21",
-    chavePix: "321.654.987-11", tipoChavePix: "CPF", status: "em_entrega", posicao: { x: 0.66, y: 0.7 }, destino: { x: 0.78, y: 0.82 },
+    chavePix: "321.654.987-11", tipoChavePix: "CPF", status: "em_entrega", posicao: { lat: -30.0510, lng: -51.2110 }, destino: { lat: -30.0570, lng: -51.2050 },
     pedidoId: "p7", entregasHoje: 9, avaliacao: 4.6, atualizadoEm: minutosAtras(0),
   },
   {
     id: "e4", nome: "Luana Freitas", cpf: "456.789.123-22", telefone: "(51) 99900-4040", veiculo: "Carro", placa: "IXZ8E90",
-    chavePix: "a1b2c3d4-e5f6-4711-8899-aabbccddeeff", tipoChavePix: "Aleatória", status: "offline", posicao: { x: 0.2, y: 0.75 },
+    chavePix: "a1b2c3d4-e5f6-4711-8899-aabbccddeeff", tipoChavePix: "Aleatória", status: "offline", posicao: { lat: -30.0535, lng: -51.2340 },
     entregasHoje: 0, avaliacao: 4.7, atualizadoEm: minutosAtras(180),
   },
 ];
 
-/** Posição da loja no mapa da área de entrega (normalizada). */
-export const posicaoLojaMock = { x: 0.5, y: 0.45 };
+/** Posição da loja (Centro Histórico de Porto Alegre, dado fictício). */
+export const posicaoLojaMock = { lat: -30.0385, lng: -51.2190 };
 
 export const estoqueMock: ItemEstoque[] = [
   { id: "i1", nome: "Pão de hambúrguer brioche", categoria: "Padaria", unidade: "un", quantidade: 46, minimo: 60, custoUnitario: 1.2, validade: diasAFrente(2), lote: "PB-2211", fornecedor: "Padaria Central" },

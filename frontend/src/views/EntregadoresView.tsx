@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
@@ -8,11 +9,10 @@ import { Card } from "@/components/ui/Card";
 import { Confirmacao, Drawer } from "@/components/ui/Drawer";
 import { EmptyState, LoadState } from "@/components/ui/EmptyState";
 import { Field } from "@/components/ui/Field";
-import { Icon } from "@/components/ui/Icon";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Toast } from "@/components/ui/Toast";
 import { Toggle } from "@/components/ui/Toggle";
-import { iniciais, mascaraCpf, mascaraTelefone, tempoDecorrido } from "@/lib/format";
+import { mascaraCpf, mascaraTelefone, tempoDecorrido } from "@/lib/format";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
 import { usePolling } from "@/lib/usePolling";
@@ -21,12 +21,13 @@ import {
 } from "@/services/operacao";
 import type { Entregador, StatusEntregador, TipoChavePix, Veiculo } from "@/types";
 
-const MAPA_L = 1000;
-const MAPA_A = 640;
 const INTERVALO_POSICOES_MS = 2000;
-const RUAS_V = [90, 230, 370, 510, 650, 790, 930];
-const RUAS_H = [80, 200, 320, 440, 560];
-const LARGURA_RUA = 14;
+
+/* O Leaflet usa `window` e pesa: entra só nesta rota e só no navegador. */
+const MapaEntregadores = dynamic(() => import("@/components/mapa/MapaEntregadores").then((m) => m.MapaEntregadores), {
+  ssr: false,
+  loading: () => <div className="mapa mapa--carregando" role="status">Carregando mapa…</div>,
+});
 
 const STATUS: Record<StatusEntregador, { rotulo: string; tom: "sucesso" | "marca" | "neutro" }> = {
   disponivel: { rotulo: "Disponível", tom: "sucesso" },
@@ -36,75 +37,6 @@ const STATUS: Record<StatusEntregador, { rotulo: string; tom: "sucesso" | "marca
 
 const TIPOS_PIX: TipoChavePix[] = ["Email", "CPF", "CNPJ", "Telefone", "Aleatória"];
 const VEICULOS: Veiculo[] = ["Moto", "Carro", "Bike"];
-
-/** Quadras do mapa: o espaço entre as ruas, com um parque e o rio para dar referência. */
-function FundoMapa() {
-  const xs = [0, ...RUAS_V, MAPA_L];
-  const ys = [0, ...RUAS_H, MAPA_A];
-  const quadras = [];
-  for (let i = 0; i < xs.length - 1; i++) {
-    for (let j = 0; j < ys.length - 1; j++) {
-      const x = xs[i]! + (i === 0 ? 0 : LARGURA_RUA / 2);
-      const y = ys[j]! + (j === 0 ? 0 : LARGURA_RUA / 2);
-      const w = xs[i + 1]! - x - (i === xs.length - 2 ? 0 : LARGURA_RUA / 2);
-      const h = ys[j + 1]! - y - (j === ys.length - 2 ? 0 : LARGURA_RUA / 2);
-      const parque = i === 5 && j === 1;
-      quadras.push(<rect key={`${i}-${j}`} x={x} y={y} width={w} height={h} rx={4} className={parque ? "mapa__parque" : "mapa__quadra"} />);
-    }
-  }
-  return (
-    <>
-      {quadras}
-      <path className="mapa__rio" d="M0 0H70C60 120 40 260 52 400 60 500 40 580 30 640H0Z" />
-      <text className="mapa__texto" x={14} y={30}>Guaíba</text>
-      <text className="mapa__texto" x={720} y={146} textAnchor="middle">Parque</text>
-    </>
-  );
-}
-
-function Mapa({ entregadores, selecionadoId, onSelecionar }: { entregadores: Entregador[]; selecionadoId: string | null; onSelecionar: (id: string) => void }) {
-  const lojaX = posicaoLoja.x * MAPA_L;
-  const lojaY = posicaoLoja.y * MAPA_A;
-  const visiveis = entregadores.filter((e) => e.status !== "offline");
-  const emEntrega = visiveis.filter((e) => e.status === "em_entrega").length;
-  return (
-    <svg
-      className="mapa"
-      viewBox={`0 0 ${MAPA_L} ${MAPA_A}`}
-      role="img"
-      aria-label={`Mapa da área de entrega com a loja no centro: ${visiveis.length} entregadores ativos, ${emEntrega} em entrega. A lista ao lado traz os mesmos dados em texto.`}
-    >
-      <FundoMapa />
-      <circle className="mapa__area" cx={lojaX} cy={lojaY} r={270} />
-      {visiveis.map((e) =>
-        e.destino && e.status === "em_entrega" ? (
-          <g key={`rota-${e.id}`}>
-            <line className="mapa__rota" x1={e.posicao.x * MAPA_L} y1={e.posicao.y * MAPA_A} x2={e.destino.x * MAPA_L} y2={e.destino.y * MAPA_A} />
-            <circle className="mapa__destino" cx={e.destino.x * MAPA_L} cy={e.destino.y * MAPA_A} r={6} />
-          </g>
-        ) : null,
-      )}
-      <g transform={`translate(${lojaX} ${lojaY})`}>
-        <circle className="mapa__loja" r={22} />
-        <g transform="translate(-13 -13)" className="mapa__icone-loja">
-          <Icon nome="loja" width={26} height={26} />
-        </g>
-      </g>
-      {visiveis.map((e) => (
-        <g
-          key={e.id}
-          className="mapa__entregador"
-          style={{ transform: `translate(${e.posicao.x * MAPA_L}px, ${e.posicao.y * MAPA_A}px)` }}
-          onClick={() => onSelecionar(e.id)}
-        >
-          {selecionadoId === e.id && <circle className="mapa__selecao" r={25} />}
-          <circle className={`mapa__ponto mapa__ponto--${e.status}`} r={19} />
-          <text className="mapa__iniciais" textAnchor="middle" y={6}>{iniciais(e.nome)}</text>
-        </g>
-      ))}
-    </svg>
-  );
-}
 
 const FORM_VAZIO = { nome: "", cpf: "", telefone: "", veiculo: "Moto" as Veiculo, placa: "", chavePix: "", tipoChavePix: "Email" as TipoChavePix };
 
@@ -213,7 +145,7 @@ export function EntregadoresView() {
 
       <div className="grid grid--sidebar">
         <Card titulo="Área de entrega" subtitulo="Posições atualizadas a cada 2 segundos">
-          <Mapa entregadores={entregadores} selecionadoId={selecionadoId} onSelecionar={setSelecionadoId} />
+          <MapaEntregadores entregadores={entregadores} loja={posicaoLoja} selecionadoId={selecionadoId} onSelecionar={setSelecionadoId} />
           <div className="mapa-legenda">
             <span><i className="mapa-legenda__loja" />Loja</span>
             <span><i className="mapa-legenda__em_entrega" />Em entrega</span>

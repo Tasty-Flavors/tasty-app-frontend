@@ -59,6 +59,11 @@ export interface Pedido {
 export type StatusEntregador = "disponivel" | "em_entrega" | "offline";
 export type Veiculo = "Moto" | "Carro" | "Bike";
 
+export interface Coordenada {
+  lat: number;
+  lng: number;
+}
+
 export interface Entregador {
   id: string;
   nome: string;
@@ -69,9 +74,8 @@ export interface Entregador {
   chavePix: string;
   tipoChavePix: TipoChavePix;
   status: StatusEntregador;
-  /** Posição normalizada (0–1) no mapa da área de entrega. */
-  posicao: { x: number; y: number };
-  destino?: { x: number; y: number };
+  posicao: Coordenada;
+  destino?: Coordenada;
   pedidoId?: string;
   entregasHoje: number;
   avaliacao: number;
