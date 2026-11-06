@@ -1,16 +1,20 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
-import { Button } from "@/components/ui/Button";
-import { Icon } from "@/components/ui/Icon";
-import { VERSAO_APP } from "@/lib/config";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, type ChangeEvent, type ReactNode } from "react";
+import { Button, Icon, Notice } from "@/components/ui";
+import { getStoredToken } from "@/lib/auth";
+import { USE_MOCKS, VERSAO_APP } from "@/lib/config";
+
+export const TOKEN_DEMONSTRACAO = "token-de-demonstracao";
 
 interface PropsSenha {
   id: string;
   rotulo: string;
   autoComplete: string;
   valor: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
 }
 
 export function CampoSenha({ id, rotulo, autoComplete, valor, onChange }: PropsSenha) {
@@ -30,7 +34,7 @@ export function CampoSenha({ id, rotulo, autoComplete, valor, onChange }: PropsS
   );
 }
 
-export function BotoesSociais({ onClicar }: { onClicar: () => void }) {
+function BotoesSociais({ onClicar }: { onClicar: () => void }) {
   return (
     <div className="login__social">
       <Button onClick={onClicar}>
@@ -52,7 +56,48 @@ export function BotoesSociais({ onClicar }: { onClicar: () => void }) {
   );
 }
 
-/** No celular fica no pé da tela de entrada. */
-export function VersaoApp() {
-  return <p className="login__versao">{VERSAO_APP}</p>;
+interface PropsTela {
+  titulo: string;
+  subtitulo: string;
+  avisoDemonstracao: string;
+  erro: string | null;
+  /** O convite para a outra tela, entre login e cadastro. */
+  rodape: ReactNode;
+  children: ReactNode;
+}
+
+/** Estrutura comum de login e cadastro. */
+export function TelaEntrada({ titulo, subtitulo, avisoDemonstracao, erro, rodape, children }: PropsTela) {
+  const router = useRouter();
+  const [aviso, setAviso] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Só o login salvo redireciona: com token fixo, o logout levaria de volta ao painel.
+    if (getStoredToken()) router.replace("/inicio");
+  }, [router]);
+
+  return (
+    <main className="login">
+      <div className="login__box">
+        <div className="login__logo">
+          <Image src="/assets/png/tasty-logo.png" alt="Logo Tasty Flavors Delivery" width={144} height={144} priority />
+        </div>
+        <h1 className="login__title">{titulo}</h1>
+        <p className="login__subtitulo">{subtitulo}</p>
+
+        {USE_MOCKS && <Notice tom="info" className="login__error">{avisoDemonstracao}</Notice>}
+        {erro && <Notice tom="perigo" role="alert" className="login__error">{erro}</Notice>}
+
+        {children}
+
+        <hr className="login__divider" />
+
+        <BotoesSociais onClicar={() => setAviso("Esta opção ainda não está disponível. Use e-mail e senha.")} />
+        {aviso && <p className="t-small login__aviso" role="status">{aviso}</p>}
+        <p>{rodape}</p>
+        {/* No celular fica no pé da tela. */}
+        <p className="login__versao">{VERSAO_APP}</p>
+      </div>
+    </main>
+  );
 }

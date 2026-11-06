@@ -1,60 +1,17 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { Badge } from "@/components/ui/Badge";
-import { Button, IconButton } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Confirmacao, Drawer } from "@/components/ui/Drawer";
-import { LoadState } from "@/components/ui/EmptyState";
-import { Field } from "@/components/ui/Field";
-import { Icon } from "@/components/ui/Icon";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Toast } from "@/components/ui/Toast";
-import { Toggle } from "@/components/ui/Toggle";
+import { useState } from "react";
+import { FormSenha } from "@/components/privacidade/FormSenha";
+import { Badge, Button, Card, DrawerAcao, Field, Icon, IconButton, LoadState, Notice, Pagina, Tabela, Toggle } from "@/components/ui";
 import { tempoDecorrido } from "@/lib/format";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
-import {
-  adicionarMembroEquipe, alterarPapelMembro, definirDoisFatores, encerrarSessao, listarEquipe, listarSessoes, obterDoisFatores, removerMembroEquipe,
-  solicitarExclusaoDados, solicitarExportacaoDados, trocarSenha,
-} from "@/services/loja";
+import { useFormulario } from "@/lib/useFormulario";
+import { adicionarMembroEquipe, alterarPapelMembro, definirDoisFatores, encerrarSessao, listarEquipe, listarSessoes, obterDoisFatores, removerMembroEquipe, solicitarExclusaoDados, solicitarExportacaoDados, trocarSenha } from "@/services/loja";
 import type { UsuarioEquipe } from "@/types";
 
 const PAPEIS: UsuarioEquipe["papel"][] = ["Gerente", "Atendente", "Cozinha"];
-const TAMANHO_MINIMO_SENHA = 8;
 const PALAVRA_EXCLUSAO = "EXCLUIR";
-
-function FormSenha({ onSalvar, ocupado }: { onSalvar: (atual: string, nova: string) => Promise<boolean>; ocupado: boolean }) {
-  const [atual, setAtual] = useState("");
-  const [nova, setNova] = useState("");
-  const [confirmar, setConfirmar] = useState("");
-  const erroNova = nova && nova.length < TAMANHO_MINIMO_SENHA ? `Use ao menos ${TAMANHO_MINIMO_SENHA} caracteres` : undefined;
-  const erroConfirmar = confirmar && confirmar !== nova ? "As senhas não conferem" : undefined;
-  const valido = atual && nova.length >= TAMANHO_MINIMO_SENHA && confirmar === nova;
-
-  async function enviar(e: FormEvent) {
-    e.preventDefault();
-    if (!valido) return;
-    if (await onSalvar(atual, nova)) {
-      setAtual("");
-      setNova("");
-      setConfirmar("");
-    }
-  }
-
-  return (
-    <Card titulo="Trocar senha">
-      <form className="form-edicao" onSubmit={enviar}>
-        <Field rotulo="Senha atual" type="password" autoComplete="current-password" value={atual} onChange={(e) => setAtual(e.target.value)} />
-        <Field rotulo="Nova senha" type="password" autoComplete="new-password" erro={erroNova} value={nova} onChange={(e) => setNova(e.target.value)} />
-        <Field rotulo="Confirmar nova senha" type="password" autoComplete="new-password" erro={erroConfirmar} value={confirmar} onChange={(e) => setConfirmar(e.target.value)} />
-        <div>
-          <Button type="submit" variante="primario" icone="chave" disabled={ocupado || !valido}>Trocar senha</Button>
-        </div>
-      </form>
-    </Card>
-  );
-}
 
 export function PrivacidadeView() {
   const { data, setData, error, reload } = useAsync(async () => {
@@ -63,7 +20,7 @@ export function PrivacidadeView() {
   });
   const { executar, ocupado, aviso } = useAcao();
   const [adicionando, setAdicionando] = useState(false);
-  const [membro, setMembro] = useState({ nome: "", email: "", papel: PAPEIS[1]! });
+  const { form: membro, setForm: setMembro, campo } = useFormulario({ nome: "", email: "", papel: PAPEIS[1]! });
   const [excluindo, setExcluindo] = useState(false);
   const [confirmacaoExclusao, setConfirmacaoExclusao] = useState("");
 
@@ -107,8 +64,7 @@ export function PrivacidadeView() {
   }
 
   return (
-    <div className="stack">
-      <PageHeader titulo="Privacidade e Segurança" subtitulo="Proteja o acesso à conta e controle os seus dados." />
+    <Pagina titulo="Privacidade e Segurança" subtitulo="Proteja o acesso à conta e controle os seus dados." aviso={aviso}>
 
       <div className="grid grid--2">
         <FormSenha onSalvar={salvarSenha} ocupado={ocupado} />
@@ -149,57 +105,36 @@ export function PrivacidadeView() {
       </Card>
 
       <Card semPadding titulo="Equipe e permissões" acao={<Button pequeno icone="mais" onClick={() => setAdicionando(true)}>Adicionar</Button>}>
-        <div className="table-wrap">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Permissão</th>
-                <th><span className="sr-only">Ações</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              {equipe.map((u) => (
-                <tr key={u.id}>
-                  <td className="table__strong">{u.nome}</td>
-                  <td data-rotulo="E-mail">{u.email}</td>
-                  <td data-rotulo="Permissão">
-                    {u.papel === "Proprietário" ? (
-                      <Badge tom="marca">Proprietário</Badge>
-                    ) : (
-                      <select className="field__control field__control--compacto" aria-label={`Permissão de ${u.nome}`} value={u.papel} disabled={ocupado} onChange={(e) => mudarPapel(u.id, e.target.value as UsuarioEquipe["papel"])}>
-                        {PAPEIS.map((p) => <option key={p}>{p}</option>)}
-                      </select>
-                    )}
-                  </td>
-                  <td>{u.papel !== "Proprietário" && <IconButton icone="lixeira" rotulo={`Remover ${u.nome}`} disabled={ocupado} onClick={() => removerMembro(u.id)} />}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Tabela
+          itens={equipe}
+          colunas={[
+            { titulo: "Nome", classe: "table__strong", celula: (u) => u.nome },
+            { titulo: "E-mail", celula: (u) => u.email },
+            {
+              titulo: "Permissão",
+              celula: (u) =>
+                u.papel === "Proprietário" ? (
+                  <Badge tom="marca">Proprietário</Badge>
+                ) : (
+                  <select className="field__control field__control--compacto" aria-label={`Permissão de ${u.nome}`} value={u.papel} disabled={ocupado} onChange={(e) => mudarPapel(u.id, e.target.value as UsuarioEquipe["papel"])}>
+                    {PAPEIS.map((p) => <option key={p}>{p}</option>)}
+                  </select>
+                ),
+            },
+            { titulo: "Ações", oculto: true, celula: (u) => u.papel !== "Proprietário" && <IconButton icone="lixeira" rotulo={`Remover ${u.nome}`} disabled={ocupado} onClick={() => removerMembro(u.id)} /> },
+          ]}
+        />
       </Card>
 
-      <Drawer
-        aberto={adicionando}
-        titulo="Adicionar à equipe"
-        onFechar={() => setAdicionando(false)}
-        rodape={
-          <>
-            <Button onClick={() => setAdicionando(false)}>Cancelar</Button>
-            <Button variante="primario" disabled={ocupado || !membro.nome.trim() || !membro.email.includes("@")} onClick={salvarMembro}>Adicionar</Button>
-          </>
-        }
-      >
-        <Field rotulo="Nome" value={membro.nome} onChange={(e) => setMembro({ ...membro, nome: e.target.value })} />
-        <Field rotulo="E-mail" type="email" value={membro.email} onChange={(e) => setMembro({ ...membro, email: e.target.value })} />
-        <Field as="select" rotulo="Permissão" value={membro.papel} onChange={(e) => setMembro({ ...membro, papel: e.target.value as UsuarioEquipe["papel"] })}>
+      <DrawerAcao aberto={adicionando} titulo="Adicionar à equipe" rotuloConfirmar="Adicionar" ocupado={ocupado} confirmarDesabilitado={!membro.nome.trim() || !membro.email.includes("@")} onCancelar={() => setAdicionando(false)} onConfirmar={salvarMembro}>
+        <Field rotulo="Nome" {...campo("nome")} />
+        <Field rotulo="E-mail" type="email" {...campo("email")} />
+        <Field as="select" rotulo="Permissão" {...campo("papel")}>
           {PAPEIS.map((p) => <option key={p}>{p}</option>)}
         </Field>
-      </Drawer>
+      </DrawerAcao>
 
-      <Confirmacao
+      <DrawerAcao
         aberto={excluindo}
         titulo="Excluir dados da loja"
         rotuloConfirmar="Solicitar exclusão"
@@ -212,13 +147,9 @@ export function PrivacidadeView() {
         }}
         onConfirmar={confirmarExclusao}
       >
-        <div className="notice notice--perigo">
-          <Icon nome="alerta" />
-          <span>Esta ação é definitiva: cardápio, pedidos e histórico financeiro serão apagados.</span>
-        </div>
+        <Notice tom="perigo">Esta ação é definitiva: cardápio, pedidos e histórico financeiro serão apagados.</Notice>
         <Field rotulo={`Digite ${PALAVRA_EXCLUSAO} para confirmar`} value={confirmacaoExclusao} onChange={(e) => setConfirmacaoExclusao(e.target.value)} />
-      </Confirmacao>
-      <Toast aviso={aviso} />
-    </div>
+      </DrawerAcao>
+    </Pagina>
   );
 }

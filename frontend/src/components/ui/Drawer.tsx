@@ -91,8 +91,8 @@ export function Drawer({ aberto, titulo, onFechar, rodape, children }: Props) {
   );
 }
 
-/** Confirmação de ação sensível, no mesmo formato de painel lateral. */
-export function Confirmacao({
+/** Painel com rodapé Cancelar e confirmar: formulários e confirmações de ação sensível. */
+export function DrawerAcao({
   aberto, titulo, children, rotuloConfirmar, perigo, ocupado, confirmarDesabilitado, onConfirmar, onCancelar,
 }: {
   aberto: boolean;

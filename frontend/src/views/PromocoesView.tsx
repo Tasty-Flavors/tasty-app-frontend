@@ -1,24 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Badge, type TomBadge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Drawer } from "@/components/ui/Drawer";
-import { EmptyState, LoadState } from "@/components/ui/EmptyState";
-import { Field } from "@/components/ui/Field";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Pills } from "@/components/ui/Pills";
-import { Toast } from "@/components/ui/Toast";
+import { BadgeStatus, Button, Card, CelulaTitulo, DrawerAcao, EmptyState, Field, LoadState, type MapaStatus, Pagina, Pills, Tabela } from "@/components/ui";
 import { dataLocalParaIso, dataParaInput, formatarData, formatarMoeda, formatarNumero } from "@/lib/format";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
+import { useFormulario } from "@/lib/useFormulario";
 import { criarPromocao, encerrarPromocao, listarPromocoes } from "@/services/marketing";
 import type { Promocao } from "@/types";
 
 type Filtro = "todas" | Promocao["status"];
 
-const STATUS: Record<Promocao["status"], { rotulo: string; tom: TomBadge }> = {
+const STATUS: MapaStatus<Promocao["status"]> = {
   ativa: { rotulo: "Ativa", tom: "sucesso" },
   agendada: { rotulo: "Agendada", tom: "info" },
   encerrada: { rotulo: "Encerrada", tom: "neutro" },
@@ -42,7 +35,7 @@ export function PromocoesView() {
   const { executar, ocupado, aviso } = useAcao();
   const [filtro, setFiltro] = useState<Filtro>("todas");
   const [criando, setCriando] = useState(false);
-  const [form, setForm] = useState(formVazio);
+  const { form, setForm, campo } = useFormulario(formVazio);
 
   if (!data) return <LoadState titulo="Promoções" erro={error} onTentarNovamente={reload} />;
 
@@ -76,8 +69,7 @@ export function PromocoesView() {
   }
 
   return (
-    <div className="stack">
-      <PageHeader titulo="Promoções" subtitulo="Crie ofertas e acompanhe o resultado." acoes={<Button variante="primario" icone="mais" onClick={() => setCriando(true)}>Nova promoção</Button>} />
+    <Pagina titulo="Promoções" subtitulo="Crie ofertas e acompanhe o resultado." acoes={<Button variante="primario" icone="mais" onClick={() => setCriando(true)}>Nova promoção</Button>} aviso={aviso}>
       <Pills<Filtro>
         rotulo="Situação"
         valor={filtro}
@@ -90,65 +82,32 @@ export function PromocoesView() {
         ]}
       />
       <Card semPadding>
-        {visiveis.length === 0 ? (
-          <EmptyState icone="porcentagem" titulo="Nenhuma promoção neste filtro" />
-        ) : (
-          <div className="table-wrap">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Promoção</th>
-                  <th>Vale para</th>
-                  <th>Período</th>
-                  <th>Situação</th>
-                  <th className="num">Usos</th>
-                  <th className="num">Receita</th>
-                  <th><span className="sr-only">Ações</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                {visiveis.map((p) => (
-                  <tr key={p.id}>
-                    <td>
-                      <div className="table__strong">{p.titulo}</div>
-                      <div className="t-small t-muted">{descreverBeneficio(p)}</div>
-                    </td>
-                    <td data-rotulo="Vale para">{p.aplicaEm}</td>
-                    <td data-rotulo="Período" className="t-small">{formatarData(p.inicio)} a {formatarData(p.fim)}</td>
-                    <td data-rotulo="Situação"><Badge tom={STATUS[p.status].tom}>{STATUS[p.status].rotulo}</Badge></td>
-                    <td data-rotulo="Usos" className="num">{formatarNumero(p.usos)}</td>
-                    <td data-rotulo="Receita" className="num">{formatarMoeda(p.receitaGerada)}</td>
-                    <td>{p.status !== "encerrada" && <Button pequeno disabled={ocupado} onClick={() => encerrar(p.id)}>Encerrar</Button>}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <Tabela
+          itens={visiveis}
+          vazio={<EmptyState icone="porcentagem" titulo="Nenhuma promoção neste filtro" />}
+          colunas={[
+            { titulo: "Promoção", celula: (p) => <CelulaTitulo titulo={p.titulo} apoio={descreverBeneficio(p)} /> },
+            { titulo: "Vale para", celula: (p) => p.aplicaEm },
+            { titulo: "Período", classe: "t-small", celula: (p) => <>{formatarData(p.inicio)} a {formatarData(p.fim)}</> },
+            { titulo: "Situação", celula: (p) => <BadgeStatus mapa={STATUS} valor={p.status} /> },
+            { titulo: "Usos", num: true, celula: (p) => formatarNumero(p.usos) },
+            { titulo: "Receita", num: true, celula: (p) => formatarMoeda(p.receitaGerada) },
+            { titulo: "Ações", oculto: true, celula: (p) => p.status !== "encerrada" && <Button pequeno disabled={ocupado} onClick={() => encerrar(p.id)}>Encerrar</Button> },
+          ]}
+        />
       </Card>
-      <Drawer
-        aberto={criando}
-        titulo="Nova promoção"
-        onFechar={() => setCriando(false)}
-        rodape={
-          <>
-            <Button onClick={() => setCriando(false)}>Cancelar</Button>
-            <Button variante="primario" disabled={ocupado || !valido} onClick={salvar}>Criar promoção</Button>
-          </>
-        }
-      >
-        <Field rotulo="Título" value={form.titulo} onChange={(e) => setForm({ ...form, titulo: e.target.value })} />
-        <Field as="select" rotulo="Tipo" value={form.tipo} onChange={(e) => setForm({ ...form, tipo: e.target.value as Promocao["tipo"] })}>
+      <DrawerAcao aberto={criando} titulo="Nova promoção" rotuloConfirmar="Criar promoção" ocupado={ocupado} confirmarDesabilitado={!valido} onCancelar={() => setCriando(false)} onConfirmar={salvar}>
+        <Field rotulo="Título" {...campo("titulo")} />
+        <Field as="select" rotulo="Tipo" {...campo("tipo")}>
           {Object.entries(TIPOS).map(([v, r]) => <option key={v} value={v}>{r}</option>)}
         </Field>
         {!semValor && (
-          <Field rotulo={form.tipo === "percentual" ? "Desconto (%)" : form.tipo === "combo" ? "Preço do combo (R$)" : "Desconto (R$)"} type="number" min={0} step="0.5" value={form.valor} onChange={(e) => setForm({ ...form, valor: e.target.value })} />
+          <Field rotulo={form.tipo === "percentual" ? "Desconto (%)" : form.tipo === "combo" ? "Preço do combo (R$)" : "Desconto (R$)"} type="number" min={0} step="0.5" {...campo("valor")} />
         )}
-        <Field rotulo="Vale para" placeholder="Ex.: Sobremesas" value={form.aplicaEm} onChange={(e) => setForm({ ...form, aplicaEm: e.target.value })} />
-        <Field rotulo="Início" type="date" value={form.inicio} onChange={(e) => setForm({ ...form, inicio: e.target.value })} />
-        <Field rotulo="Fim" type="date" erro={erroDatas} value={form.fim} onChange={(e) => setForm({ ...form, fim: e.target.value })} />
-      </Drawer>
-      <Toast aviso={aviso} />
-    </div>
+        <Field rotulo="Vale para" placeholder="Ex.: Sobremesas" {...campo("aplicaEm")} />
+        <Field rotulo="Início" type="date" {...campo("inicio")} />
+        <Field rotulo="Fim" type="date" erro={erroDatas} {...campo("fim")} />
+      </DrawerAcao>
+    </Pagina>
   );
 }

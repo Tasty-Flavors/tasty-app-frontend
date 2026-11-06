@@ -1,14 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Confirmacao } from "@/components/ui/Drawer";
-import { LoadState } from "@/components/ui/EmptyState";
-import { Icon } from "@/components/ui/Icon";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Toast } from "@/components/ui/Toast";
+import { CartaoPlano } from "@/components/premium/CartaoPlano";
+import { DrawerAcao, ListaDados, LoadState, Pagina } from "@/components/ui";
 import { formatarMoeda, formatarPercentual } from "@/lib/format";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
@@ -31,51 +25,22 @@ export function PremiumView() {
   }
 
   return (
-    <div className="stack">
-      <PageHeader titulo="Premium" subtitulo="Compare os planos e escolha o melhor para a sua loja." />
+    <Pagina titulo="Premium" subtitulo="Compare os planos e escolha o melhor para a sua loja." aviso={aviso}>
       <div className="grid grid--3">
-        {data.planos.map((plano) => {
-          const atual = plano.id === data.atual;
-          return (
-            <Card key={plano.id} className={atual ? "plano plano--atual" : "plano"}>
-              <div className="row row--between">
-                <h2 className="card__title row row--compacta">
-                  {plano.id === "premium" && <Icon nome="coroa" tamanho={20} />}
-                  {plano.nome}
-                </h2>
-                {atual ? <Badge tom="marca" icone="check">Plano atual</Badge> : plano.destaque ? <Badge tom="info">Mais escolhido</Badge> : null}
-              </div>
-              <div>
-                <div className="plano__preco">{plano.precoMensal === 0 ? "Sem mensalidade" : `${formatarMoeda(plano.precoMensal)}/mês`}</div>
-                <div className="t-small t-muted">{formatarPercentual(plano.comissao)} de comissão por pedido</div>
-              </div>
-              <p>{plano.descricao}</p>
-              <ul className="plano__recursos">
-                {plano.recursos.map((r) => (
-                  <li key={r}>
-                    <Icon nome="check" tamanho={18} />
-                    {r}
-                  </li>
-                ))}
-              </ul>
-              <Button variante={atual ? "secundario" : "primario"} bloco disabled={atual} onClick={() => setEscolhido(plano)}>
-                {atual ? "Plano atual" : `Mudar para ${plano.nome}`}
-              </Button>
-            </Card>
-          );
-        })}
+        {data.planos.map((plano) => (
+          <CartaoPlano key={plano.id} plano={plano} atual={plano.id === data.atual} onEscolher={() => setEscolhido(plano)} />
+        ))}
       </div>
-      <Confirmacao aberto={Boolean(escolhido)} titulo={`Mudar para o plano ${escolhido?.nome ?? ""}`} rotuloConfirmar="Confirmar troca" ocupado={ocupado} onCancelar={() => setEscolhido(null)} onConfirmar={confirmar}>
+      <DrawerAcao aberto={Boolean(escolhido)} titulo={`Mudar para o plano ${escolhido?.nome ?? ""}`} rotuloConfirmar="Confirmar troca" ocupado={ocupado} onCancelar={() => setEscolhido(null)} onConfirmar={confirmar}>
         {escolhido && (
-          <dl className="dl">
-            <dt>Mensalidade</dt>
-            <dd>{escolhido.precoMensal === 0 ? "Sem mensalidade" : formatarMoeda(escolhido.precoMensal)}</dd>
-            <dt>Comissão</dt>
-            <dd>{formatarPercentual(escolhido.comissao)} por pedido</dd>
-          </dl>
+          <ListaDados
+            itens={[
+              ["Mensalidade", escolhido.precoMensal === 0 ? "Sem mensalidade" : formatarMoeda(escolhido.precoMensal)],
+              ["Comissão", `${formatarPercentual(escolhido.comissao)} por pedido`],
+            ]}
+          />
         )}
-      </Confirmacao>
-      <Toast aviso={aviso} />
-    </div>
+      </DrawerAcao>
+    </Pagina>
   );
 }

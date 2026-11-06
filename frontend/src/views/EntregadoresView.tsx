@@ -2,25 +2,15 @@
 
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
-import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
-import { Button, IconButton } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Confirmacao, Drawer } from "@/components/ui/Drawer";
-import { EmptyState, LoadState } from "@/components/ui/EmptyState";
-import { Field } from "@/components/ui/Field";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Toast } from "@/components/ui/Toast";
-import { Toggle } from "@/components/ui/Toggle";
+import { FORM_VAZIO, FormCadastro } from "@/components/entregadores/FormCadastro";
+import { ItemFrota } from "@/components/entregadores/ItemFrota";
+import { Button, Card, DrawerAcao, EmptyState, IconButton, LoadState, Pagina, Tabela, Toggle } from "@/components/ui";
 import { USE_MOCKS } from "@/lib/config";
-import { mascaraCpf, mascaraTelefone, previsaoDeChegada, tempoDecorrido } from "@/lib/format";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
 import { usePolling } from "@/lib/usePolling";
-import {
-  alterarDisponibilidade, cadastrarEntregador, listarEntregadores, listarPedidos, obterPosicaoLoja, obterPosicoes, removerEntregador,
-} from "@/services/operacao";
-import type { Entregador, StatusEntregador, TipoChavePix, Veiculo } from "@/types";
+import { alterarDisponibilidade, cadastrarEntregador, listarEntregadores, listarPedidos, obterPosicaoLoja, obterPosicoes, removerEntregador } from "@/services/operacao";
+import type { Entregador } from "@/types";
 
 const INTERVALO_POSICOES_MS = 2000;
 
@@ -29,66 +19,6 @@ const MapaEntregadores = dynamic(() => import("@/components/mapa/MapaEntregadore
   ssr: false,
   loading: () => <div className="mapa mapa--carregando" role="status">Carregando mapa…</div>,
 });
-
-const STATUS: Record<StatusEntregador, { rotulo: string; tom: "sucesso" | "marca" | "neutro" }> = {
-  disponivel: { rotulo: "Disponível", tom: "sucesso" },
-  em_entrega: { rotulo: "Em entrega", tom: "marca" },
-  offline: { rotulo: "Offline", tom: "neutro" },
-};
-
-const TIPOS_PIX: TipoChavePix[] = ["Email", "CPF", "CNPJ", "Telefone", "Aleatória"];
-const VEICULOS: Veiculo[] = ["Moto", "Carro", "Bike"];
-
-const FORM_VAZIO = { nome: "", cpf: "", telefone: "", veiculo: "Moto" as Veiculo, placa: "", chavePix: "", tipoChavePix: "Email" as TipoChavePix };
-
-function FormCadastro({ aberto, ocupado, onFechar, onSalvar }: { aberto: boolean; ocupado: boolean; onFechar: () => void; onSalvar: (f: typeof FORM_VAZIO) => void }) {
-  const [form, setForm] = useState(FORM_VAZIO);
-  const [tentou, setTentou] = useState(false);
-  const campo = <K extends keyof typeof FORM_VAZIO>(k: K, v: (typeof FORM_VAZIO)[K]) => setForm((f) => ({ ...f, [k]: v }));
-  const exigePlaca = form.veiculo !== "Bike";
-  const erros = {
-    nome: !form.nome.trim() ? "Informe o nome" : undefined,
-    cpf: form.cpf.replace(/\D/g, "").length !== 11 ? "CPF deve ter 11 dígitos" : undefined,
-    telefone: form.telefone.replace(/\D/g, "").length < 10 ? "Telefone incompleto" : undefined,
-    placa: exigePlaca && !form.placa.trim() ? "Informe a placa" : undefined,
-    chavePix: !form.chavePix.trim() ? "Informe a chave PIX" : undefined,
-  };
-  const valido = !Object.values(erros).some(Boolean);
-
-  function salvar() {
-    setTentou(true);
-    if (!valido) return;
-    onSalvar(form);
-    setForm(FORM_VAZIO);
-    setTentou(false);
-  }
-
-  return (
-    <Drawer
-      aberto={aberto}
-      titulo="Cadastrar entregador"
-      onFechar={onFechar}
-      rodape={
-        <>
-          <Button onClick={onFechar}>Cancelar</Button>
-          <Button variante="primario" disabled={ocupado} onClick={salvar}>Salvar</Button>
-        </>
-      }
-    >
-      <Field rotulo="Nome" value={form.nome} erro={tentou ? erros.nome : undefined} onChange={(e) => campo("nome", e.target.value)} />
-      <Field rotulo="CPF" inputMode="numeric" value={form.cpf} erro={tentou ? erros.cpf : undefined} onChange={(e) => campo("cpf", mascaraCpf(e.target.value))} />
-      <Field rotulo="Telefone" inputMode="tel" value={form.telefone} erro={tentou ? erros.telefone : undefined} onChange={(e) => campo("telefone", mascaraTelefone(e.target.value))} />
-      <Field as="select" rotulo="Veículo" value={form.veiculo} onChange={(e) => campo("veiculo", e.target.value as Veiculo)}>
-        {VEICULOS.map((v) => <option key={v}>{v}</option>)}
-      </Field>
-      {exigePlaca && <Field rotulo="Placa" value={form.placa} erro={tentou ? erros.placa : undefined} onChange={(e) => campo("placa", e.target.value.toUpperCase())} />}
-      <Field as="select" rotulo="Tipo da chave PIX" value={form.tipoChavePix} onChange={(e) => campo("tipoChavePix", e.target.value as TipoChavePix)}>
-        {TIPOS_PIX.map((t) => <option key={t}>{t}</option>)}
-      </Field>
-      <Field rotulo="Chave PIX" value={form.chavePix} erro={tentou ? erros.chavePix : undefined} onChange={(e) => campo("chavePix", e.target.value)} />
-    </Drawer>
-  );
-}
 
 export function EntregadoresView() {
   const { data, setData, error, reload } = useAsync(async () => {
@@ -147,8 +77,7 @@ export function EntregadoresView() {
   }
 
   return (
-    <div className="stack">
-      <PageHeader titulo="Entregadores" subtitulo="Acompanhe sua frota no mapa e gerencie os cadastros." acoes={<Button variante="primario" icone="mais" onClick={() => setCadastrando(true)}>Cadastrar entregador</Button>} />
+    <Pagina titulo="Entregadores" subtitulo="Acompanhe sua frota no mapa e gerencie os cadastros." acoes={<Button variante="primario" icone="mais" onClick={() => setCadastrando(true)}>Cadastrar entregador</Button>} aviso={aviso}>
 
       <div className="grid grid--sidebar">
         <Card titulo="Área de entrega" subtitulo="Posições atualizadas a cada 2 segundos">
@@ -165,76 +94,33 @@ export function EntregadoresView() {
           {entregadores.length === 0 ? (
             <EmptyState icone="moto" titulo="Nenhum entregador cadastrado" />
           ) : (
-            entregadores.map((e) => {
-              const pedido = pedidos.find((p) => p.id === e.pedidoId);
-              return (
-                <button key={e.id} type="button" className="entregador-item" aria-pressed={selecionadoId === e.id} onClick={() => setSelecionadoId(e.id)}>
-                  <Avatar nome={e.nome} />
-                  <span className="min-0 stack--flex">
-                    <span className="row row--between">
-                      <span className="t-title">{e.nome}</span>
-                      <Badge tom={STATUS[e.status].tom}>{STATUS[e.status].rotulo}</Badge>
-                    </span>
-                    <span className="t-small t-muted">
-                      {pedido ? `Pedido #${pedido.numero}` : "Sem pedido em curso"} · {e.entregasHoje} entregas hoje · ★ {e.avaliacao.toLocaleString("pt-BR")}
-                    </span>
-                    {e.status === "em_entrega" && e.chegadaEm && (
-                      <span className="t-small">
-                        {previsaoDeChegada(e.chegadaEm)}
-                        {e.rota?.some((p) => p.transito) && " · trânsito na rota"}
-                      </span>
-                    )}
-                    <span className="t-small t-muted">Atualizado {tempoDecorrido(e.atualizadoEm)}</span>
-                  </span>
-                </button>
-              );
-            })
+            entregadores.map((e) => (
+              <ItemFrota key={e.id} entregador={e} pedido={pedidos.find((p) => p.id === e.pedidoId)} selecionado={selecionadoId === e.id} onSelecionar={() => setSelecionadoId(e.id)} />
+            ))
           )}
         </Card>
       </div>
 
       <Card semPadding titulo="Entregadores cadastrados">
-        <div className="table-wrap">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>CPF</th>
-                <th>Veículo</th>
-                <th>Placa</th>
-                <th>Chave PIX</th>
-                <th>Tipo</th>
-                <th>Online</th>
-                <th><span className="sr-only">Ações</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              {entregadores.map((e) => (
-                <tr key={e.id}>
-                  <td className="table__strong">{e.nome}</td>
-                  <td data-rotulo="CPF">{e.cpf}</td>
-                  <td data-rotulo="Veículo">{e.veiculo}</td>
-                  <td data-rotulo="Placa">{e.placa ?? "—"}</td>
-                  <td data-rotulo="Chave PIX">{e.chavePix}</td>
-                  <td data-rotulo="Tipo">{e.tipoChavePix}</td>
-                  <td data-rotulo="Online">
-                    <Toggle ligado={e.status !== "offline"} disabled={e.status === "em_entrega" || ocupado} rotulo={`${e.nome} online`} onChange={(v) => alternar(e, v)} />
-                  </td>
-                  <td>
-                    <IconButton icone="lixeira" rotulo={`Remover ${e.nome}`} disabled={e.status === "em_entrega"} onClick={() => setRemover(e)} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Tabela
+          itens={entregadores}
+          colunas={[
+            { titulo: "Nome", classe: "table__strong", celula: (e) => e.nome },
+            { titulo: "CPF", celula: (e) => e.cpf },
+            { titulo: "Veículo", celula: (e) => e.veiculo },
+            { titulo: "Placa", celula: (e) => e.placa ?? "—" },
+            { titulo: "Chave PIX", celula: (e) => e.chavePix },
+            { titulo: "Tipo", celula: (e) => e.tipoChavePix },
+            { titulo: "Online", celula: (e) => <Toggle ligado={e.status !== "offline"} disabled={e.status === "em_entrega" || ocupado} rotulo={`${e.nome} online`} onChange={(v) => alternar(e, v)} /> },
+            { titulo: "Ações", oculto: true, celula: (e) => <IconButton icone="lixeira" rotulo={`Remover ${e.nome}`} disabled={e.status === "em_entrega"} onClick={() => setRemover(e)} /> },
+          ]}
+        />
       </Card>
 
       <FormCadastro aberto={cadastrando} ocupado={ocupado} onFechar={() => setCadastrando(false)} onSalvar={salvar} />
-      <Confirmacao aberto={Boolean(remover)} titulo="Remover entregador" rotuloConfirmar="Remover" perigo ocupado={ocupado} onCancelar={() => setRemover(null)} onConfirmar={confirmarRemocao}>
+      <DrawerAcao aberto={Boolean(remover)} titulo="Remover entregador" rotuloConfirmar="Remover" perigo ocupado={ocupado} onCancelar={() => setRemover(null)} onConfirmar={confirmarRemocao}>
         <p>O cadastro de {remover?.nome} será removido. Esta ação não pode ser desfeita.</p>
-      </Confirmacao>
-      <Toast aviso={aviso} />
-    </div>
+      </DrawerAcao>
+    </Pagina>
   );
 }

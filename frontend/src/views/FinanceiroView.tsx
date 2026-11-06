@@ -1,29 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Badge, type TomBadge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
-import { EmptyState, LoadState } from "@/components/ui/EmptyState";
-import { KpiCard } from "@/components/ui/KpiCard";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Pills } from "@/components/ui/Pills";
+import { BadgeStatus, Card, EmptyState, KpiCard, LoadState, type MapaStatus, Pagina, Pills, Tabela } from "@/components/ui";
 import { formatarData, formatarMoeda, formatarPercentual } from "@/lib/format";
+import { STATUS_FATURA } from "@/lib/opcoes";
 import { useAsync } from "@/lib/useAsync";
 import { listarFaturas, listarLancamentos, obterResumoFinanceiro } from "@/services/negocio";
-import type { Fatura, Lancamento } from "@/types";
+import type { Lancamento } from "@/types";
 
 type FiltroTipo = "todos" | Lancamento["tipo"];
 
-const STATUS_LANCAMENTO: Record<Lancamento["status"], { rotulo: string; tom: TomBadge }> = {
+const STATUS_LANCAMENTO: MapaStatus<Lancamento["status"]> = {
   liquidado: { rotulo: "Liquidado", tom: "sucesso" },
   previsto: { rotulo: "Previsto", tom: "info" },
   processando: { rotulo: "Processando", tom: "alerta" },
-};
-
-const STATUS_FATURA: Record<Fatura["status"], { rotulo: string; tom: TomBadge }> = {
-  paga: { rotulo: "Paga", tom: "sucesso" },
-  aberta: { rotulo: "Aberta", tom: "alerta" },
-  atrasada: { rotulo: "Atrasada", tom: "perigo" },
 };
 
 export function FinanceiroView() {
@@ -38,8 +28,7 @@ export function FinanceiroView() {
   const visiveis = lancamentos.filter((l) => tipo === "todos" || l.tipo === tipo);
 
   return (
-    <div className="stack">
-      <PageHeader titulo="Financeiro" subtitulo="Saldo, repasses, extrato e mensalidade." />
+    <Pagina titulo="Financeiro" subtitulo="Saldo, repasses, extrato e mensalidade.">
       <div className="grid grid--3">
         <KpiCard rotulo="Saldo a receber" valor={formatarMoeda(resumo.saldoAReceber)} detalhe="previsto e em processamento" />
         <KpiCard rotulo="Próximo repasse" valor={formatarMoeda(resumo.proximoRepasse.valor)} detalhe={`em ${formatarData(resumo.proximoRepasse.data)}`} />
@@ -64,58 +53,29 @@ export function FinanceiroView() {
           />
         }
       >
-        {visiveis.length === 0 ? (
-          <EmptyState icone="cifrao" titulo="Nenhum lançamento deste tipo" />
-        ) : (
-          <div className="table-wrap">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Descrição</th>
-                  <th>Situação</th>
-                  <th className="num">Valor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visiveis.map((l) => (
-                  <tr key={l.id}>
-                    <td>{formatarData(l.data)}</td>
-                    <td data-rotulo="Descrição">{l.descricao}</td>
-                    <td data-rotulo="Situação"><Badge tom={STATUS_LANCAMENTO[l.status].tom}>{STATUS_LANCAMENTO[l.status].rotulo}</Badge></td>
-                    <td data-rotulo="Valor" className={l.valor < 0 ? "num t-danger" : "num t-positive"}>{formatarMoeda(l.valor)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <Tabela
+          itens={visiveis}
+          vazio={<EmptyState icone="cifrao" titulo="Nenhum lançamento deste tipo" />}
+          colunas={[
+            { titulo: "Data", celula: (l) => formatarData(l.data) },
+            { titulo: "Descrição", celula: (l) => l.descricao },
+            { titulo: "Situação", celula: (l) => <BadgeStatus mapa={STATUS_LANCAMENTO} valor={l.status} /> },
+            { titulo: "Valor", num: true, classe: (l) => (l.valor < 0 ? "t-danger" : "t-positive"), celula: (l) => formatarMoeda(l.valor) },
+          ]}
+        />
       </Card>
 
       <Card semPadding titulo="Faturas da mensalidade">
-        <div className="table-wrap">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Competência</th>
-                <th>Vencimento</th>
-                <th>Situação</th>
-                <th className="num">Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {faturas.map((f) => (
-                <tr key={f.id}>
-                  <td className="table__strong">{f.competencia}</td>
-                  <td data-rotulo="Vencimento">{formatarData(f.vencimento)}</td>
-                  <td data-rotulo="Situação"><Badge tom={STATUS_FATURA[f.status].tom}>{STATUS_FATURA[f.status].rotulo}</Badge></td>
-                  <td data-rotulo="Valor" className="num">{formatarMoeda(f.valor)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Tabela
+          itens={faturas}
+          colunas={[
+            { titulo: "Competência", classe: "table__strong", celula: (f) => f.competencia },
+            { titulo: "Vencimento", celula: (f) => formatarData(f.vencimento) },
+            { titulo: "Situação", celula: (f) => <BadgeStatus mapa={STATUS_FATURA} valor={f.status} /> },
+            { titulo: "Valor", num: true, celula: (f) => formatarMoeda(f.valor) },
+          ]}
+        />
       </Card>
-    </div>
+    </Pagina>
   );
 }

@@ -1,26 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Badge, type TomBadge } from "@/components/ui/Badge";
-import { Button, IconButton } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Confirmacao } from "@/components/ui/Drawer";
-import { EmptyState, LoadState } from "@/components/ui/EmptyState";
-import { Field } from "@/components/ui/Field";
-import { Icon } from "@/components/ui/Icon";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Toast } from "@/components/ui/Toast";
-import { dataLocalParaIso, dataParaInput, formatarData, formatarNumero } from "@/lib/format";
+import { CartaoPost } from "@/components/feed/CartaoPost";
+import { Button, Card, DrawerAcao, EmptyState, Field, LoadState, Pagina } from "@/components/ui";
+import { dataLocalParaIso, dataParaInput } from "@/lib/format";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
 import { criarPost, listarPosts, removerPost } from "@/services/marketing";
 import type { PostFeed } from "@/types";
-
-const STATUS: Record<PostFeed["status"], { rotulo: string; tom: TomBadge }> = {
-  publicado: { rotulo: "Publicado", tom: "sucesso" },
-  agendado: { rotulo: "Agendado", tom: "info" },
-  rascunho: { rotulo: "Rascunho", tom: "neutro" },
-};
 
 const CORES = [
   { rotulo: "Laranja", valor: "var(--tasty-orange-400)" },
@@ -61,8 +48,7 @@ export function FeedView() {
   const vazio = !texto.trim();
 
   return (
-    <div className="stack">
-      <PageHeader titulo="Feed" subtitulo="Publique novidades para quem segue a sua loja." />
+    <Pagina titulo="Feed" subtitulo="Publique novidades para quem segue a sua loja." aviso={aviso}>
       <Card titulo="Novo post">
         <div className="form-edicao">
           <Field as="textarea" rotulo="Texto" rows={3} placeholder="Conte uma novidade da loja" value={texto} onChange={(e) => setTexto(e.target.value)} />
@@ -92,34 +78,12 @@ export function FeedView() {
         <EmptyState icone="mensagem" titulo="Nenhum post ainda" />
       ) : (
         data.map((p) => (
-          <Card key={p.id}>
-            <article className="post">
-              <div className="post__midia" style={{ background: p.imagemCor }} aria-hidden="true" />
-              <div className="post__corpo">
-                <div className="row row--between">
-                  <div className="row">
-                    <Badge tom={STATUS[p.status].tom}>{STATUS[p.status].rotulo}</Badge>
-                    <span className="t-small t-muted">{formatarData(p.data)}</span>
-                  </div>
-                  <IconButton icone="lixeira" rotulo="Remover post" onClick={() => setRemover(p)} />
-                </div>
-                <p>{p.texto}</p>
-                {p.status === "publicado" && (
-                  <div className="post__metricas">
-                    <span><Icon nome="coracao" tamanho={16} />{formatarNumero(p.curtidas)} curtidas</span>
-                    <span><Icon nome="mensagem" tamanho={16} />{formatarNumero(p.comentarios)} comentários</span>
-                    <span><Icon nome="olho" tamanho={16} />{formatarNumero(p.alcance)} de alcance</span>
-                  </div>
-                )}
-              </div>
-            </article>
-          </Card>
+          <CartaoPost key={p.id} post={p} onRemover={() => setRemover(p)} />
         ))
       )}
-      <Confirmacao aberto={Boolean(remover)} titulo="Remover post" rotuloConfirmar="Remover" perigo ocupado={ocupado} onCancelar={() => setRemover(null)} onConfirmar={confirmarRemocao}>
+      <DrawerAcao aberto={Boolean(remover)} titulo="Remover post" rotuloConfirmar="Remover" perigo ocupado={ocupado} onCancelar={() => setRemover(null)} onConfirmar={confirmarRemocao}>
         <p>Este post sairá do feed da loja. Esta ação não pode ser desfeita.</p>
-      </Confirmacao>
-      <Toast aviso={aviso} />
-    </div>
+      </DrawerAcao>
+    </Pagina>
   );
 }

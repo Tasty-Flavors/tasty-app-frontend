@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { EmptyState, LoadState } from "@/components/ui/EmptyState";
-import { Field } from "@/components/ui/Field";
-import { KpiCard } from "@/components/ui/KpiCard";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { SearchInput } from "@/components/ui/SearchInput";
-import { Toast } from "@/components/ui/Toast";
+import { Badge, Button, Card, EmptyState, Field, FiltroCategoria, KpiCard, LoadState, Pagina, SearchInput, Tabela } from "@/components/ui";
 import { formatarMoeda, formatarPercentual } from "@/lib/format";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
@@ -36,13 +28,14 @@ export function PrecosView() {
   const produtos = data;
 
   const precoAtual = (p: Produto) => (p.id in rascunho ? Number(rascunho[p.id]) : p.preco);
+  const margemBaixaDe = (p: Produto) => margem(precoAtual(p), p.custo) < MARGEM_MINIMA;
   const categorias = [...new Set(produtos.map((p) => p.categoria))].sort();
   const termo = busca.trim().toLowerCase();
   const visiveis = produtos.filter((p) => (categoriaFiltro === TODAS || p.categoria === categoriaFiltro) && (!termo || p.nome.toLowerCase().includes(termo)));
 
   const alterados = produtos.filter((p) => p.id in rascunho && Number(rascunho[p.id]) !== p.preco);
   const temInvalido = alterados.some((p) => !(Number(rascunho[p.id]) > 0));
-  const margemBaixa = produtos.filter((p) => margem(precoAtual(p), p.custo) < MARGEM_MINIMA);
+  const margemBaixa = produtos.filter(margemBaixaDe);
   const margemMedia = produtos.reduce((s, p) => s + margem(precoAtual(p), p.custo), 0) / Math.max(1, produtos.length);
 
   function aplicarReajuste() {
@@ -72,8 +65,7 @@ export function PrecosView() {
   }
 
   return (
-    <div className="stack">
-      <PageHeader
+    <Pagina
         titulo="Preços"
         subtitulo="Ajuste preços acompanhando custo, margem e lucro por item."
         acoes={
@@ -84,7 +76,8 @@ export function PrecosView() {
             </Button>
           </>
         }
-      />
+        aviso={aviso}
+      >
 
       <div className="grid grid--3">
         <KpiCard rotulo="Margem média" valor={formatarPercentual(margemMedia)} />
@@ -107,68 +100,48 @@ export function PrecosView() {
 
       <div className="filtros">
         <SearchInput valor={busca} onChange={setBusca} placeholder="Buscar produto" />
-        <select className="field__control" aria-label="Filtrar por categoria" value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)}>
-          <option value={TODAS}>Todas as categorias</option>
-          {categorias.map((c) => <option key={c}>{c}</option>)}
-        </select>
+        <FiltroCategoria valor={categoriaFiltro} todas={TODAS} categorias={categorias} onChange={setCategoriaFiltro} />
       </div>
 
       <Card semPadding>
-        {visiveis.length === 0 ? (
-          <EmptyState icone="etiqueta" titulo="Nenhum produto encontrado" />
-        ) : (
-          <div className="table-wrap">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Produto</th>
-                  <th>Categoria</th>
-                  <th className="num">Custo</th>
-                  <th className="num">Preço</th>
-                  <th className="num">Margem</th>
-                  <th className="num">Lucro</th>
-                  <th><span className="sr-only">Avisos</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                {visiveis.map((p) => {
-                  const preco = precoAtual(p);
-                  const m = margem(preco, p.custo);
-                  const baixa = m < MARGEM_MINIMA;
-                  const alterado = p.id in rascunho && Number(rascunho[p.id]) !== p.preco;
-                  return (
-                    <tr key={p.id} className={baixa ? "linha--margem-baixa" : undefined}>
-                      <td className="table__strong">{p.nome}</td>
-                      <td data-rotulo="Categoria">{p.categoria}</td>
-                      <td data-rotulo="Custo" className="num">{formatarMoeda(p.custo)}</td>
-                      <td data-rotulo="Preço" className="num">
-                        <input
-                          className="field__control field__control--compacto table__input"
-                          type="number"
-                          min="0"
-                          step="0.5"
-                          aria-label={`Preço de ${p.nome}`}
-                          value={rascunho[p.id] ?? p.preco.toFixed(2)}
-                          onChange={(e) => setRascunho((r) => ({ ...r, [p.id]: e.target.value }))}
-                        />
-                      </td>
-                      <td data-rotulo="Margem" className={baixa ? "num t-danger" : "num"}>{formatarPercentual(m)}</td>
-                      <td data-rotulo="Lucro" className="num">{formatarMoeda(preco - p.custo)}</td>
-                      <td>
-                        <div className="tag-lista">
-                          {baixa && <Badge tom="perigo" icone="alerta">Margem baixa</Badge>}
-                          {alterado && <Badge tom="info" icone="lapis">Alterado</Badge>}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <Tabela
+          itens={visiveis}
+          vazio={<EmptyState icone="etiqueta" titulo="Nenhum produto encontrado" />}
+          classeLinha={(p) => (margemBaixaDe(p) ? "linha--margem-baixa" : undefined)}
+          colunas={[
+            { titulo: "Produto", classe: "table__strong", celula: (p) => p.nome },
+            { titulo: "Categoria", celula: (p) => p.categoria },
+            { titulo: "Custo", num: true, celula: (p) => formatarMoeda(p.custo) },
+            {
+              titulo: "Preço",
+              num: true,
+              celula: (p) => (
+                <input
+                  className="field__control field__control--compacto table__input"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  aria-label={`Preço de ${p.nome}`}
+                  value={rascunho[p.id] ?? p.preco.toFixed(2)}
+                  onChange={(e) => setRascunho((r) => ({ ...r, [p.id]: e.target.value }))}
+                />
+              ),
+            },
+            { titulo: "Margem", num: true, classe: (p) => (margemBaixaDe(p) ? "t-danger" : undefined), celula: (p) => formatarPercentual(margem(precoAtual(p), p.custo)) },
+            { titulo: "Lucro", num: true, celula: (p) => formatarMoeda(precoAtual(p) - p.custo) },
+            {
+              titulo: "Avisos",
+              oculto: true,
+              celula: (p) => (
+                <div className="tag-lista">
+                  {margemBaixaDe(p) && <Badge tom="perigo" icone="alerta">Margem baixa</Badge>}
+                  {p.id in rascunho && Number(rascunho[p.id]) !== p.preco && <Badge tom="info" icone="lapis">Alterado</Badge>}
+                </div>
+              ),
+            },
+          ]}
+        />
       </Card>
-      <Toast aviso={aviso} />
-    </div>
+    </Pagina>
   );
 }

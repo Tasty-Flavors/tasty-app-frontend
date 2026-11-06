@@ -1,9 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Toggle } from "@/components/ui/Toggle";
+import { Button, Card, Pagina, Toggle } from "@/components/ui";
 import { desbloquearAudio, tocarAlertaPedido } from "@/lib/som";
 import { usePreferencias } from "@/lib/usePreferencias";
 
@@ -20,8 +17,7 @@ export function AcessibilidadeView() {
   ];
 
   return (
-    <div className="stack">
-      <PageHeader titulo="Acessibilidade" subtitulo="As opções são aplicadas e salvas neste navegador na hora." />
+    <Pagina titulo="Acessibilidade" subtitulo="As opções são aplicadas e salvas neste navegador na hora.">
       <Card>
         {opcoes.map((o) => (
           <div key={o.rotulo} className="linha-opcao">
@@ -44,6 +40,6 @@ export function AcessibilidadeView() {
           Testar alerta sonoro
         </Button>
       </div>
-    </div>
+    </Pagina>
   );
 }

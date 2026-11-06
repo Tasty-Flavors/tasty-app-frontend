@@ -1,6 +1,14 @@
 import type { ReactNode } from "react";
+import type { Aviso } from "@/lib/useAcao";
+import { Toast } from "./Toast";
 
-export function PageHeader({ titulo, subtitulo, acoes }: { titulo: string; subtitulo?: ReactNode; acoes?: ReactNode }) {
+interface PropsCabecalho {
+  titulo: string;
+  subtitulo?: ReactNode;
+  acoes?: ReactNode;
+}
+
+export function PageHeader({ titulo, subtitulo, acoes }: PropsCabecalho) {
   return (
     <header className="page-header">
       <div>
@@ -9,5 +17,16 @@ export function PageHeader({ titulo, subtitulo, acoes }: { titulo: string; subti
       </div>
       {acoes && <div className="row">{acoes}</div>}
     </header>
+  );
+}
+
+/** Estrutura das telas do painel: cabeçalho, conteúdo e, se a tela tiver ações, o aviso. */
+export function Pagina({ aviso, children, ...cabecalho }: PropsCabecalho & { aviso?: Aviso | null; children: ReactNode }) {
+  return (
+    <div className="stack">
+      <PageHeader {...cabecalho} />
+      {children}
+      {aviso !== undefined && <Toast aviso={aviso} />}
+    </div>
   );
 }

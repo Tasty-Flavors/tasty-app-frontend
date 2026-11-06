@@ -1,19 +1,13 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { LoadState } from "@/components/ui/EmptyState";
-import { Field } from "@/components/ui/Field";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Toast } from "@/components/ui/Toast";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { Button, Card, Field, LoadState, PageHeader, Toast } from "@/components/ui";
 import { mascaraCep, mascaraCnpj, mascaraTelefone } from "@/lib/format";
+import { TIPOS_PIX } from "@/lib/opcoes";
 import { useAcao } from "@/lib/useAcao";
 import { useAsync } from "@/lib/useAsync";
 import { obterDadosLoja, salvarDadosLoja } from "@/services/loja";
-import type { DadosLoja, TipoChavePix } from "@/types";
-
-const TIPOS_PIX: TipoChavePix[] = ["Email", "CPF", "CNPJ", "Telefone", "Aleatória"];
+import type { DadosLoja } from "@/types";
 
 export function DadosLojaView() {
   const { data, setData, error, reload } = useAsync(obterDadosLoja);
@@ -26,7 +20,13 @@ export function DadosLojaView() {
 
   if (!data || !form) return <LoadState titulo="Dados da Loja" erro={error} onTentarNovamente={reload} />;
 
-  const campo = (k: keyof DadosLoja, v: string) => setForm((f) => (f ? { ...f, [k]: v } : f));
+  const campo = (k: keyof DadosLoja, mascara?: (v: string) => string) => ({
+    value: form[k],
+    onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const valor = e.target.value;
+      setForm((f) => (f ? { ...f, [k]: mascara ? mascara(valor) : valor } : f));
+    },
+  });
   const alterado = JSON.stringify(form) !== JSON.stringify(data);
 
   async function salvar(e: FormEvent) {
@@ -51,28 +51,28 @@ export function DadosLojaView() {
       />
       <Card titulo="Endereço">
         <div className="form-grid">
-          <Field rotulo="Rua" required value={form.rua} onChange={(e) => campo("rua", e.target.value)} />
-          <Field rotulo="Complemento" value={form.complemento} onChange={(e) => campo("complemento", e.target.value)} />
-          <Field rotulo="Número" required value={form.numero} onChange={(e) => campo("numero", e.target.value)} />
-          <Field rotulo="Cidade" required value={form.cidade} onChange={(e) => campo("cidade", e.target.value)} />
-          <Field rotulo="Estado" required value={form.estado} onChange={(e) => campo("estado", e.target.value)} />
-          <Field rotulo="CEP" required inputMode="numeric" value={form.cep} onChange={(e) => campo("cep", mascaraCep(e.target.value))} />
+          <Field rotulo="Rua" required {...campo("rua")} />
+          <Field rotulo="Complemento" {...campo("complemento")} />
+          <Field rotulo="Número" required {...campo("numero")} />
+          <Field rotulo="Cidade" required {...campo("cidade")} />
+          <Field rotulo="Estado" required {...campo("estado")} />
+          <Field rotulo="CEP" required inputMode="numeric" {...campo("cep", mascaraCep)} />
         </div>
       </Card>
       <Card titulo="Dados bancários">
         <div className="form-grid">
-          <Field rotulo="Razão social" required value={form.razaoSocial} onChange={(e) => campo("razaoSocial", e.target.value)} />
-          <Field rotulo="CNPJ" required inputMode="numeric" value={form.cnpj} onChange={(e) => campo("cnpj", mascaraCnpj(e.target.value))} />
-          <Field rotulo="Chave PIX" required value={form.chavePix} onChange={(e) => campo("chavePix", e.target.value)} />
-          <Field as="select" rotulo="Tipo da chave" value={form.tipoChavePix} onChange={(e) => campo("tipoChavePix", e.target.value)}>
+          <Field rotulo="Razão social" required {...campo("razaoSocial")} />
+          <Field rotulo="CNPJ" required inputMode="numeric" {...campo("cnpj", mascaraCnpj)} />
+          <Field rotulo="Chave PIX" required {...campo("chavePix")} />
+          <Field as="select" rotulo="Tipo da chave" {...campo("tipoChavePix")}>
             {TIPOS_PIX.map((t) => <option key={t}>{t}</option>)}
           </Field>
         </div>
       </Card>
       <Card titulo="Contato">
         <div className="form-grid">
-          <Field rotulo="Telefone" required inputMode="tel" value={form.telefone} onChange={(e) => campo("telefone", mascaraTelefone(e.target.value))} />
-          <Field rotulo="E-mail" required type="email" value={form.email} onChange={(e) => campo("email", e.target.value)} />
+          <Field rotulo="Telefone" required inputMode="tel" {...campo("telefone", mascaraTelefone)} />
+          <Field rotulo="E-mail" required type="email" {...campo("email")} />
         </div>
       </Card>
       <Toast aviso={aviso} />
