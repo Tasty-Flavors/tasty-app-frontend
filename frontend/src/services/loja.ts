@@ -1,0 +1,98 @@
+import { api, mockResponse } from "@/lib/api";
+import { USE_MOCKS } from "@/lib/config";
+import type { DadosLoja, PreferenciasAcessibilidade, Restaurante, SessaoAtiva, UsuarioEquipe } from "@/types";
+import { acessibilidadeMock, dadosLojaMock, equipeMock, restauranteMock, sessoesMock } from "@/mocks/loja";
+
+let restaurante = structuredClone(restauranteMock);
+let dados = structuredClone(dadosLojaMock);
+let sessoes = structuredClone(sessoesMock);
+
+/** GET /v1/restaurante/dashboard — já existe no BFF. */
+export async function obterRestaurante(): Promise<Restaurante> {
+  if (USE_MOCKS) return mockResponse(restaurante);
+  return api.get<Restaurante>("/v1/restaurante/dashboard");
+}
+
+/** PUT /v1/restaurante (multipart: descricao, logo) — já existe no BFF. */
+export async function atualizarRestaurante(campos: { descricao: string; endereco: string; logo?: File }) {
+  if (USE_MOCKS) {
+    restaurante = { ...restaurante, descricao: campos.descricao, endereco: campos.endereco };
+    if (campos.logo) restaurante.imagem = URL.createObjectURL(campos.logo);
+    return mockResponse(restaurante);
+  }
+  const form = new FormData();
+  form.append("descricao", campos.descricao);
+  form.append("endereco", campos.endereco);
+  if (campos.logo) form.append("logo", campos.logo);
+  return api.put<Restaurante>("/v1/restaurante", form);
+}
+
+export async function atualizarTempos(tempoRetiradaMin: number, tempoEntregaMin: number) {
+  if (USE_MOCKS) {
+    restaurante = { ...restaurante, tempoRetiradaMin, tempoEntregaMin };
+    return mockResponse(restaurante);
+  }
+  return api.patch<Restaurante>("/v1/restaurante/tempos", { tempoRetiradaMin, tempoEntregaMin });
+}
+
+/** TODO backend: GET /v1/restaurante/dados */
+export async function obterDadosLoja(): Promise<DadosLoja> {
+  if (USE_MOCKS) return mockResponse(dados);
+  return api.get<DadosLoja>("/v1/restaurante/dados");
+}
+
+export async function salvarDadosLoja(novo: DadosLoja) {
+  if (USE_MOCKS) {
+    dados = structuredClone(novo);
+    return mockResponse(dados);
+  }
+  return api.put<DadosLoja>("/v1/restaurante/dados", novo as unknown as Record<string, unknown>);
+}
+
+const PREF_KEY = "tasty:acessibilidade";
+
+/** Preferências ficam no navegador; quando houver endpoint, sincronizar com o perfil. */
+export function lerPreferencias(): PreferenciasAcessibilidade {
+  if (typeof window === "undefined") return acessibilidadeMock;
+  try {
+    const salvo = window.localStorage.getItem(PREF_KEY);
+    return salvo ? { ...acessibilidadeMock, ...JSON.parse(salvo) } : acessibilidadeMock;
+  } catch {
+    return acessibilidadeMock;
+  }
+}
+
+export function salvarPreferencias(p: PreferenciasAcessibilidade) {
+  try {
+    window.localStorage.setItem(PREF_KEY, JSON.stringify(p));
+  } catch {
+    /* sem armazenamento: aplica só nesta sessão */
+  }
+  aplicarPreferencias(p);
+}
+
+export function aplicarPreferencias(p: PreferenciasAcessibilidade) {
+  const root = document.documentElement;
+  root.dataset.theme = p.modoEscuro ? "dark" : "light";
+  root.dataset.vision = p.daltonismo ? "cvd" : "default";
+  root.dataset.motion = p.animacoes ? "full" : "reduced";
+}
+
+/** TODO backend: GET /v1/restaurante/sessoes */
+export async function listarSessoes(): Promise<SessaoAtiva[]> {
+  if (USE_MOCKS) return mockResponse(sessoes);
+  return api.get<SessaoAtiva[]>("/v1/restaurante/sessoes");
+}
+
+export async function encerrarSessao(id: string) {
+  if (USE_MOCKS) {
+    sessoes = sessoes.filter((s) => s.id !== id);
+    return mockResponse(sessoes);
+  }
+  return api.delete<SessaoAtiva[]>(`/v1/restaurante/sessoes/${id}`);
+}
+
+export async function listarEquipe(): Promise<UsuarioEquipe[]> {
+  if (USE_MOCKS) return mockResponse(equipeMock);
+  return api.get<UsuarioEquipe[]>("/v1/restaurante/equipe");
+}

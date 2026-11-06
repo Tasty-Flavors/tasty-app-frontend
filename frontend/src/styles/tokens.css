@@ -1,0 +1,138 @@
+/*
+ * Tokens Tasty — espelham as variáveis criadas no Figma
+ * (coleções "Tasty / Primitivos", "Tasty / Cores" e "Tasty / Dimensões").
+ * Primitivos não devem ser usados direto nos componentes; use os semânticos.
+ */
+:root {
+  /* Primitivos */
+  --tasty-orange-100: #fff1db;
+  --tasty-orange-400: #ffa60c;
+  --tasty-orange-500: #ff9900;
+  --tasty-orange-700: #a36200;
+  --tasty-gray-0: #ffffff;
+  --tasty-gray-50: #f3f3f3;
+  --tasty-gray-100: #ececec;
+  --tasty-gray-200: #d5d5d5;
+  --tasty-gray-300: #d9d9d9;
+  --tasty-gray-400: #c5c5c5;
+  --tasty-gray-500: #b4b4b4;
+  --tasty-gray-600: #888888;
+  --tasty-gray-700: #5c5c5c;
+  --tasty-gray-800: #353535;
+  --tasty-gray-1000: #000000;
+  --tasty-green-100: #e3f7e7;
+  --tasty-green-400: #07d300;
+  --tasty-green-500: #05bb26;
+  --tasty-green-700: #008e15;
+  --tasty-red-100: #ffe5e5;
+  --tasty-red-500: #ff0a0a;
+  --tasty-red-700: #c40000;
+  --tasty-purple-100: #f1e3f7;
+  --tasty-purple-700: #550076;
+
+  /* Cores semânticas */
+  --tasty-bg-page: var(--tasty-gray-0);
+  --tasty-bg-canvas: var(--tasty-gray-50);
+  --tasty-bg-surface: var(--tasty-gray-100);
+  --tasty-bg-surface-alt: var(--tasty-gray-300);
+  --tasty-bg-input: var(--tasty-gray-0);
+  --tasty-bg-sidebar: var(--tasty-orange-500);
+  --tasty-bg-sidebar-active: rgba(213, 213, 213, 0.74);
+  --tasty-bg-indicator: var(--tasty-gray-0);
+  --tasty-bg-brand: var(--tasty-orange-500);
+  --tasty-bg-brand-strong: var(--tasty-orange-700);
+  --tasty-bg-brand-subtle: var(--tasty-orange-100);
+  --tasty-bg-success: var(--tasty-green-500);
+  --tasty-bg-success-subtle: var(--tasty-green-100);
+  --tasty-bg-danger: var(--tasty-red-500);
+  --tasty-bg-danger-subtle: var(--tasty-red-100);
+  --tasty-bg-info-subtle: var(--tasty-purple-100);
+  --tasty-bg-inverse: var(--tasty-gray-1000);
+
+  --tasty-text-primary: var(--tasty-gray-1000);
+  --tasty-text-secondary: var(--tasty-gray-700);
+  --tasty-text-muted: var(--tasty-gray-600);
+  --tasty-text-on-color: var(--tasty-gray-0);
+  --tasty-text-positive: var(--tasty-green-700);
+  --tasty-text-danger: var(--tasty-red-700);
+  --tasty-text-warning: var(--tasty-orange-700);
+  --tasty-text-link: var(--tasty-purple-700);
+
+  --tasty-border-default: var(--tasty-gray-1000);
+  --tasty-border-subtle: var(--tasty-gray-500);
+  --tasty-border-brand: var(--tasty-orange-500);
+  --tasty-border-danger: var(--tasty-red-500);
+  --tasty-border-positive: var(--tasty-green-500);
+
+  /* Dados (gráficos) — série única usa o laranja escuro por contraste */
+  --tasty-chart-primary: var(--tasty-orange-700);
+  --tasty-chart-secondary: var(--tasty-orange-400);
+  --tasty-chart-grid: var(--tasty-gray-300);
+
+  /* Dimensões */
+  --tasty-radius-sm: 4px;
+  --tasty-radius-md: 9px;
+  --tasty-radius-lg: 11px;
+  --tasty-radius-xl: 19px;
+  --tasty-radius-full: 999px;
+  --tasty-space-xs: 4px;
+  --tasty-space-sm: 8px;
+  --tasty-space-md: 12px;
+  --tasty-space-lg: 16px;
+  --tasty-space-xl: 24px;
+  --tasty-space-2xl: 32px;
+  --tasty-space-3xl: 40px;
+
+  --tasty-shadow-card: 0 4px 18px rgba(0, 0, 0, 0.25);
+  --tasty-sidebar-width: 274px;
+
+  /* Tipografia (famílias carregadas via next/font em app/layout.tsx) */
+  --tasty-font-title: var(--font-roboto), "Roboto", Arial, sans-serif;
+  --tasty-font-body: var(--font-average), "Average", Georgia, serif;
+  --tasty-font-menu: var(--font-averia), "Averia Serif Libre", Georgia, serif;
+  --tasty-font-group: var(--font-raleway), "Raleway", Arial, sans-serif;
+}
+
+/* Modo escuro — ativado pela tela de Acessibilidade (data-theme="dark" no <html>) */
+:root[data-theme="dark"] {
+  --tasty-bg-page: #151515;
+  --tasty-bg-canvas: #101010;
+  --tasty-bg-surface: #2a2a2a;
+  --tasty-bg-surface-alt: #3a3a3a;
+  --tasty-bg-input: #151515;
+  --tasty-bg-sidebar: var(--tasty-orange-700);
+  --tasty-bg-sidebar-active: rgba(0, 0, 0, 0.3);
+  --tasty-bg-brand-subtle: #3d2600;
+  --tasty-bg-success-subtle: #0e3315;
+  --tasty-bg-danger-subtle: #3d0a0a;
+  --tasty-bg-info-subtle: #2a0a38;
+  --tasty-text-primary: #ffffff;
+  --tasty-text-secondary: #c5c5c5;
+  --tasty-text-muted: #a0a0a0;
+  --tasty-text-positive: var(--tasty-green-400);
+  --tasty-text-danger: #ff6b6b;
+  --tasty-text-warning: var(--tasty-orange-400);
+  --tasty-text-link: #c78be0;
+  --tasty-border-default: #888888;
+  --tasty-border-subtle: #4a4a4a;
+  --tasty-chart-primary: var(--tasty-orange-400);
+  --tasty-chart-grid: #3a3a3a;
+}
+
+/* Modo daltonismo — troca verde/vermelho por azul/laranja com ícone sempre presente */
+:root[data-vision="cvd"] {
+  --tasty-text-positive: #0057b8;
+  --tasty-bg-success: #0072ce;
+  --tasty-bg-success-subtle: #e0edfb;
+  --tasty-border-positive: #0072ce;
+  --tasty-text-danger: #a34700;
+  --tasty-bg-danger: #d55e00;
+  --tasty-bg-danger-subtle: #fbe9dc;
+}
+
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  animation: none !important;
+  transition: none !important;
+}
